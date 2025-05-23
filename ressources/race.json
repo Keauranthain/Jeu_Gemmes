@@ -1,0 +1,86 @@
+{
+  "humain": {
+
+    "vie": 20,
+    "mana": 0,
+    "endurance": 20,
+
+    "force": 12,
+    "agilite": 14,
+    "resistance": 8,
+    "charisme": 12,
+
+    "force_male": 2,
+    "agilite_male": 2,
+    "resistance_male": 2,
+    "charisme_male": 0,
+
+    "force_female": 0,
+    "agilite_female": 0,
+    "resistance_female": 0,
+    "charisme_female": 2,
+
+    "magie": 0,
+    "resistance_magique": 1,
+    "incantation": 0,
+    "intelligence": 20,
+
+    "magie_male": 0,
+    "resistance_magique_male": 0,
+    "incantation_male": 0,
+    "intelligence_male": 0,
+
+    "magie_female": 0,
+    "resistance_magique_female": 0,
+    "incantation_female": 0,
+    "intelligence_female": 0,
+
+    "enfance": 3,
+    "adolescence": 12,
+    "adulte": 18,
+    "vieillesse": 60,
+    "esperance_de_vie": 80
+  },
+  "gobelin": {
+
+    "vie": 14,
+    "mana": 4,
+    "endurance": 25,
+
+    "force": 8,
+    "agilite": 16,
+    "resistance": 6,
+    "charisme": 6,
+
+    "force_male": 1,
+    "agilite_male": 2,
+    "resistance_male": 0,
+    "charisme_male": 0,
+
+    "force_female": 0,
+    "agilite_female": 0,
+    "resistance_female": 0,
+    "charisme_female": 0,
+
+    "magie": 2,
+    "resistance_magique": 4,
+    "incantation": 1,
+    "intelligence": 2,
+
+    "magie_male": 0,
+    "resistance_magique_male": 0,
+    "incantation_male": 0,
+    "intelligence_male": 0,
+
+    "magie_female": 0,
+    "resistance_magique_female": 0,
+    "incantation_female": 0,
+    "intelligence_female": 0,
+
+    "enfance": 1,
+    "adolescence": 4,
+    "adulte": 10,
+    "vieillesse": 35,
+    "esperance_de_vie": 45
+  }
+}
