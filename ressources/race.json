@@ -1,9 +1,18 @@
 {
   "humain": {
+    "magique": false,
 
     "vie": 20,
     "mana": 0,
     "endurance": 20,
+
+    "vie_male": 2,
+    "mana_male": 0,
+    "endurance_male": 2,
+
+    "vie_female": 0,
+    "mana_female": 0,
+    "endurance_female": 0,
 
     "force": 12,
     "agilite": 14,
@@ -39,13 +48,24 @@
     "adolescence": 12,
     "adulte": 18,
     "vieillesse": 60,
-    "esperance_de_vie": 80
+    "esperance_de_vie": 80,
+
+    "capacite_base": ["coup_de_poing_capacite","repos_capacite"]
   },
-  "gobelin": {
+  "goblin": {
+    "magique": true,
 
     "vie": 14,
     "mana": 4,
     "endurance": 25,
+
+    "vie_male": 2,
+    "mana_male": 0,
+    "endurance_male": 2,
+
+    "vie_female": 0,
+    "mana_female": 0,
+    "endurance_female": 0,
 
     "force": 8,
     "agilite": 16,
@@ -81,6 +101,8 @@
     "adolescence": 4,
     "adulte": 10,
     "vieillesse": 35,
-    "esperance_de_vie": 45
+    "esperance_de_vie": 45,
+
+    "capacite_base": ["griffure_phy_p3_v6_capacite"]
   }
 }

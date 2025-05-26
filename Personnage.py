@@ -1,106 +1,45 @@
-import random as rnd
-from Basique import obtenir_texte
-import json
+from Capacite import capacite
+from Ressource import races_global
 
-with open("ressources/capacite.json", "r", encoding="utf-8") as f:
-    abilities = json.load(f)
+class Personnage():
+    def __init__(self, nom:str, race:str = "humain", joueur = False,male:bool = False,female:bool = False):
 
-spell_name = abilities["capacite_magique"]["5,4"]  # → "Flux"
-print(spell_name)
-
-print(obtenir_texte("fr",spell_name))
-
-class Homme():
-    def __init__(self, nom:str,joueur = False):
+        if male or not(female):
+            self.genre = "male"
+        else:
+            self.genre = "female"
         self.nom = nom
-        self.magie =  10
-        self.resistance_magique = 10
-        self.incantation = 10
-        self.mana_total = 10
+        self.magie = races_global[race]["magie"] + races_global[race][f"magie_{self.genre}"]
+        self.resistance_magique = races_global[race]["resistance_magique"] + races_global[race][f"resistance_magique_{self.genre}"]
+        self.incantation = races_global[race]["incantation"] + races_global[race][f"incantation_{self.genre}"]
+        self.mana_total = races_global[race]["mana"] + races_global[race][f"mana_{self.genre}"]
         self.mana = self.mana_total
-        self.force = 10
-        self.resistance = 10
-        self.agilite = 10
-        self.endurance_total = 10
+        self.force = races_global[race]["force"] + races_global[race][f"force_{self.genre}"]
+        self.resistance = races_global[race]["resistance"] + races_global[race][f"resistance_{self.genre}"]
+        self.agilite = races_global[race]["agilite"] + races_global[race][f"agilite_{self.genre}"]
+        self.endurance_total = races_global[race]["endurance"] + races_global[race][f"endurance_{self.genre}"]
         self.endurance = self.endurance_total
-        self.vie_total = 10
+        self.vie_total = races_global[race]["vie"] + races_global[race][f"vie_{self.genre}"]
         self.vie = self.vie_total
-        self.capacite = [Capacite("coup de poing",5,0,1,2)]
+        self.capacite = []
+        for capacite_clef in races_global[race]["capacite_base"]:
+            self.capacite.append(capacite(capacite_clef))
         self.joueur = joueur
 
-    def capaciter_selecteur(self):
+    def capaciter_selecteur(self,mana,endurance):
+        liste_temporaire = []
+        for k in self.capacite:
+            if k.mana<=mana and k.endurance<=endurance:
+                liste_temporaire.append(k)
         if self.joueur:
-            for k in range (len(self.capacite)):
-                print(f"{k} : {self.capacite[k].nom}")
-            return self.capacite[int(input("Capacité : "))]
+            for k in range (len(liste_temporaire)):
+                print(f"{k} : {liste_temporaire[k].nom}, mana : {liste_temporaire[k].mana},"
+                      f" endurance : {liste_temporaire[k].endurance}")
+            result = -1
+            while result<0 or result>=len(liste_temporaire):
+                try:
+                    result = int(input("Capacité : "))
+                except:
+                    print(f"Merci de mettre un entier entre 0 et {len(liste_temporaire)-1}")
+            return liste_temporaire[result]
         return self.capacite[0]
-
-class Capacite():
-    def __init__(self,nom,force:int = 0,magie:int = 0,mana:int = 0, endurence:int = 0,temps:int = 0,
-                 cible_autre:bool = True,cible_sois:bool = False,soin:bool = False,):
-        self.nom = nom
-        self.force = force
-        self.magie = magie
-        self.mana = magie*(temps-10)*-1
-        self.endurence = endurence
-        self.temps = temps
-        self.cible_autre = cible_autre
-        self.cible_sois = cible_sois
-        self.soin = soin
-
-
-class Combat():
-    def __init__(self):
-        self.combattant_1 = Homme(joueur=True,nom="Corentin")
-
-    def temps(self,capacite,auteur):
-        if capacite.magie > 0:
-            t = (capacite.temps**2)/auteur.incantation
-        else:
-            t = (capacite.temps**2)/auteur.agilite
-        return t
-    def degat(self,capacite,cible,auteur):
-        if capacite.magie > 0:
-            d = (capacite.magie**1.5*auteur.magie)/(cible.resistance_magique**1.5)  * round(rnd.uniform(0.9, 1.1), 2)
-        else:
-            d = (capacite.force**1.5*auteur.force)/(cible.resistance**1.5)  * round(rnd.uniform(0.9, 1.1), 2)
-        return round(d,2)
-
-    def debut(self):
-        combat_1 = self.combattant_1
-        combat_2 = self.combattant_2
-
-        print(f"{combat_1.nom} {combat_1.vie} / {combat_1.vie} VS {combat_2.nom} {combat_2.vie} / {combat_2.vie}")
-
-        cap_1 = combat_1.capaciter_selecteur()
-        cap_2 = combat_2.capaciter_selecteur()
-        temps_1 = self.temps(cap_1,combat_1)
-        temps_2 = self.temps(cap_2,combat_2)
-
-        while(self.combattant_1.vie>0 and self.combattant_2.vie>0):
-            if temps_1 < temps_2:
-                temps_2 = temps_2-temps_1
-                deg = self.degat(cap_1,combat_2,combat_1)
-                print(f"{combat_1.nom} utilise {cap_1.nom} et inflige {deg}")
-                combat_2.vie = round(combat_2.vie-deg,2)
-                print(f"{combat_1.nom} {combat_1.vie} / {combat_1.vie_total} VS {combat_2.nom} {combat_2.vie} / {combat_2.vie_total}")
-                if combat_1.vie > 0:
-                    cap_1 = combat_1.capaciter_selecteur()
-                    temps_1 = self.temps(cap_1, combat_1)
-            else :
-                temps_1 = temps_1 - temps_2
-                deg = self.degat(cap_2, combat_1, combat_2)
-                print(f"{combat_2.nom} utilise {cap_2.nom} et inflige {deg}")
-                combat_1.vie = round(combat_1.vie - deg,2)
-                print(f"{combat_1.nom} {combat_1.vie} / {combat_1.vie_total} VS {combat_2.nom} {combat_2.vie} / {combat_2.vie_total}")
-                if combat_1.vie > 0 :
-                    cap_2 = combat_2.capaciter_selecteur()
-                    temps_2 = self.temps(cap_2, combat_2)
-            print()
-        if combat_1.vie<=0:
-            print("Joueur mort")
-        else:
-            print("Goblin mort")
-
-c = Combat()
-#c.debut()
