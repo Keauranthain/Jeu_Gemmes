@@ -2,49 +2,67 @@ import Personnage as perso
 import Capacite as capa
 import random as rnd
 
+class Action():
+    def __init__(self,auteur:perso.Personnage=None,cible:perso.Personnage=None,capacite:capa.Capacite_class=None,temps:int=0):
+        self.auteur = auteur
+        self.cible = cible
+        self.capacite = capacite
+        self.temps:int = temps
+
+    def __str__(self):
+        return f"auteur : {self.auteur}, cible : {self.cible}, capacite : ({self.capacite}), temps : {self.temps}"
+
+    def avance_temps(self,avance:int):
+        self.temps = self.temps-avance
+
 class Combat():
-    def __init__(self,combattant_1:perso.Personnage,combattant_2:perso.Personnage,combattant_3:perso.Personnage):
-        self.combattant_1 = combattant_1
-        self.camp_1 = [combattant_1]
-        self.camp_2 = [combattant_2,combattant_3]
-        self.combattant_2 = combattant_2
+    def __init__(self,camps_1:list,camps_2:list,affiche:bool=True):
+        self.camp_1 = camps_1
+        self.camp_2 = camps_2
+        self.camp_1_mort = []
+        self.camp_2_mort = []
+        self.temps_combat = 0
+        self.affiche = affiche
+        self.victoire = []
+
+    def printer(self, txt, end="\n"):
+        if self.affiche:
+            print(txt, end=end)
 
     def str_vie(self,personnage:perso.Personnage):
-        return f"{personnage.nom} {personnage.vie} / {personnage.vie_total}"
+        return f"{personnage.nom} ({personnage.vie} / {personnage.vie_total})"
 
+    def creation_print_liste(self,camps:list,nom_le_plus_long:int=0):
+        result = []
+        for personnage in camps:
+            perso = self.str_vie(personnage)
+            result.append(perso)
+            if len(perso)>nom_le_plus_long:
+                nom_le_plus_long = len(perso)
+        return result, nom_le_plus_long
 
-    def ecrant_combat(self,camp_1,camp_2):
-        """
-        TODO
-        Calculer tous les vie str stoquer en liste
-        determiner le plus long
-        printe le toups
-        trouver le joueur
-        print stat+
-        """
-        n = 10
-        nom_le_plus_long = 0
-        for perso in camp_1:
-            if len(self.str_vie(perso)) > nom_le_plus_long:
-                nom_le_plus_long = perso.nom
-        for perso in camp_2:
-            if perso.nom > nom_le_plus_long:
-                nom_le_plus_long = perso.nom
-        perso_1_c1 = self.str_vie(camp_1[0])
-        perso_1_c2 = self.str_vie(camp_2[0])
-        print(
-            f"{self.str_vie(camp_1[0])}"
-            f" {n*'-'} VS {n*'-'} "
-            f"{self.str_vie(camp_2[0])}")
+    def ecran_combat(self):
+        n = 20
 
-        for k in range(max(len(camp_1), len(camp_2))-1):
-            print(
-                f"{self.str_vie(camp_1[k])}"
-                f"{2*n+6 * ' '}"
-                f"{self.str_vie(camp_2[k])}")
-        #print(
-        #    f"\n\nEndurance : {combat_1.endurance}/{combat_1.endurance_total}"
-        #    f"\nMana : {combat_1.mana}/{combat_1.mana_total}\n")
+        camp_1_str,nom_le_plus_long =self.creation_print_liste(self.camp_1)
+        camp_2_str, nom_le_plus_long = self.creation_print_liste(self.camp_2, nom_le_plus_long)
+
+        self.printer(
+            f"{camp_1_str[0]}"
+            f" {n*' '}{(nom_le_plus_long-len(camp_1_str[0]))*' '} VS {(nom_le_plus_long-len(camp_2_str[0]))*' '}{n*' '} "
+            f"{camp_2_str[0]}")
+
+        for k in range(1,max(len(camp_1_str), len(camp_2_str))):
+            if len(camp_1_str) > k:
+                self.printer(f"{camp_1_str[k]}{(nom_le_plus_long-len(camp_1_str[k]))*' '}",end="")
+            else:
+                self.printer(f"{' '*nom_le_plus_long}",end="")
+            self.printer(f"{(2*n+6) * ' '}",end="")
+            if len(camp_2_str) > k:
+                self.printer(f"{(nom_le_plus_long-len(camp_2_str[k]))*' '}{camp_2_str[k]}")
+            else:
+                self.printer(f"{' '*nom_le_plus_long}")
+        self.printer(f"\n\n")
 
     def temps(self,capacite,auteur):
         if capacite.magie > 0:
@@ -60,53 +78,84 @@ class Combat():
             d = (capacite.force*auteur.force**1.5)/(cible.resistance**1.5)  * round(rnd.uniform(0.9, 1.1), 2)
         return round(d,2)
 
-    def attaque(self,attaquant:perso.Personnage,defenseur:perso.Personnage,capacite):
+    def attaque(self,action:Action,affiche:bool=True):
+        attaquant,defenseur,capacite=action.auteur,action.cible,action.capacite
         deg = self.degat(capacite, defenseur, attaquant)
         attaquant.mana = min(attaquant.mana - capacite.mana, attaquant.mana_total)
         attaquant.endurance = min(attaquant.endurance - capacite.endurance, attaquant.endurance_total)
-        print(f"{attaquant.nom} utilise {capacite.nom}", end="")
+        self.printer(f"{attaquant.nom} utilise {capacite.nom}", end="")
         if capacite.cible_sois:
-            print(f" et recupère {-capacite.mana} de mana et {-capacite.endurance} d'endurance")
+            self.printer(f" et recupère {-capacite.mana} de mana et {-capacite.endurance} d'endurance")
         else:
-            print(f" et inflige {deg}")
+            self.printer(f" et inflige {deg}")
         defenseur.vie = max(0, round(defenseur.vie - deg, 2))
-        self.ecrant_combat(attaquant, defenseur)
-        if defenseur.vie > 0:
-            nouvelle_capacite = attaquant.capaciter_selecteur(attaquant.magie, attaquant.endurance)
-            temps = self.temps(nouvelle_capacite, attaquant)
-            return nouvelle_capacite, temps
-        return 0,0
 
-    def debut(self):
+    def debut(self,affiche:bool=True):
         camp_1 = self.camp_1
         camp_2 = self.camp_2
+        camp_1_mort = self.camp_1_mort
+        camp_2_mort = self.camp_2_mort
+        liste_actions = []
+        self.ecran_combat()
+        for personnage in camp_1+camp_2:
+            capacite = personnage.capaciter_selecteur(personnage.magie,personnage.endurance)
+            if capacite.cible_sois:
+                cible = personnage
+            elif personnage in camp_1:
+                cible = camp_2[rnd.randint(0,len(camp_2)-1)]
+            else:
+                cible = camp_1[rnd.randint(0,len(camp_1)-1)]
 
-        self.ecrant_combat(combat_1,combat_2)
+            liste_actions.append(Action(auteur=personnage,cible=cible,temps=capacite.temps,capacite=capacite))
 
-        cap_1 = combat_1.capaciter_selecteur(combat_1.magie,combat_1.endurance)
-        cap_2 = combat_2.capaciter_selecteur(combat_2.magie,combat_2.endurance)
-        temps_1 = self.temps(cap_1,combat_1)
-        temps_2 = self.temps(cap_2,combat_2)
+        self.ecran_combat()
 
-        while(self.combattant_1.vie>0 and self.combattant_2.vie>0):
-            if temps_1 < temps_2:
-                temps_2 = temps_2 - temps_1
-                cap_1,temps_1 = self.attaque(combat_1,combat_2,cap_1)
-            else :
-                temps_1 = temps_1 - temps_2
-                cap_2,temps_2 = self.attaque(combat_2,combat_1,cap_2)
-            print()
-        if combat_1.vie==0:
-            print(f"{combat_1.nom} mort")
+
+        while(len(camp_1)>0 and len(camp_2)>0):
+            action_plus_rapide = liste_actions[0]
+            for action in liste_actions:
+                if action.temps < action_plus_rapide.temps:
+                    action_plus_rapide = action
+            liste_actions.remove(action_plus_rapide)
+
+            self.temps_combat = self.temps_combat + action_plus_rapide.temps
+
+            for action in liste_actions:
+                action.avance_temps(action_plus_rapide.temps)
+
+            personnage = action_plus_rapide.auteur
+            cible = action_plus_rapide.cible
+
+
+            self.attaque(action_plus_rapide)
+
+            if cible.vie <= 0:
+                if cible in camp_1:
+                    camp_1.remove(cible)
+                    camp_1_mort.append(cible)
+                    self.printer(f"{cible.nom} est tombé")
+                elif cible in camp_2:
+                    camp_2.remove(cible)
+                    camp_2_mort.append(cible)
+                    self.printer(f"{cible.nom} est tombé")
+
+            if len(camp_1)>0 and len(camp_2)>0:
+                self.ecran_combat()
+                nouvelle_capacite = personnage.capaciter_selecteur(personnage.magie,personnage.endurance)
+                temps = nouvelle_capacite.temps
+
+                if nouvelle_capacite.cible_sois:
+                    cible = personnage
+                elif personnage in camp_1:
+                    cible = camp_2[rnd.randint(0,len(camp_2))-1]
+                else:
+                    cible = camp_1[rnd.randint(0,len(camp_1))-1]
+                nouvelle_action = Action(auteur=personnage, cible=cible, temps=temps, capacite=nouvelle_capacite)
+                liste_actions.append(nouvelle_action)
+        if(len(camp_1)>0):
+            self.printer("Le camps 1 l'emporte !")
+            self.victoire = self.camp_1
+
         else:
-            print(f"{combat_2.nom} mort")
-
-class Action():
-    def __init__(self,auteur:perso.Personnage,cible:perso.Personnage,capacite:capa.Capacite_class,temps:int):
-        self.auteur = auteur
-        self.cible = cible
-        self.capacite = capacite
-        self.temps = temps
-
-    def temps(self,avance:int):
-        self.temps = self.temps-avance
+            self.printer("Le camps 2 l'emporte !")
+            self.victoire = self.camp_2

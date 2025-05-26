@@ -39,6 +39,9 @@ class Capacite_class():
         self.soin = soin
         self.magique = magique
 
+    def __str__(self):
+        return f"nom : {self.nom}, clef : {self.clef}, force : {self.force}, magie : {self.magie}, endurance : {self.endurance}, mana : {self.mana}, temps : {self.temps}, cible sois : {self.cible_sois}, magique : {self.magique}"
+
 def capacite_basique():
     capacite = Capacite_class("Coup de poing", "coup_de_poing_capacite", force=2, temps=7,magique=False,endurance=2)
     capacites_jeu["coup_de_poing_capacite"] =  capacite

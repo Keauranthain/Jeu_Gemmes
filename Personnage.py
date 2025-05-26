@@ -9,6 +9,7 @@ class Personnage():
         else:
             self.genre = "female"
         self.nom = nom
+        self.race = race
         self.magie = races_global[race]["magie"] + races_global[race][f"magie_{self.genre}"]
         self.resistance_magique = races_global[race]["resistance_magique"] + races_global[race][f"resistance_magique_{self.genre}"]
         self.incantation = races_global[race]["incantation"] + races_global[race][f"incantation_{self.genre}"]
@@ -25,6 +26,9 @@ class Personnage():
         for capacite_clef in races_global[race]["capacite_base"]:
             self.capacite.append(capacite(capacite_clef))
         self.joueur = joueur
+
+    def __str__(self):
+        return f"{self.nom}, {self.race}, {self.genre}, - Vie: {self.vie}/{self.vie_total}, Mana: {self.mana}/{self.mana_total}, Endurance: {self.endurance}/{self.endurance_total}"
 
     def capaciter_selecteur(self,mana,endurance):
         liste_temporaire = []
