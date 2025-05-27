@@ -9,11 +9,13 @@ from Basique import aleatoire, choix_nombre
 
 
 class Action():
-    def __init__(self,auteur:Acteur=None,cible:Acteur=None,capacite:capa.Capacite_class=None,temps:int=0):
+    def __init__(self,auteur:Acteur=None,cible:Acteur=None,capacite:capa.Capacite_class=None,temps:int=0,posture:bool=False,position:bool=False):
         self.auteur = auteur
         self.cible = cible
         self.capacite = capacite
         self.temps:int = temps
+        self.posture = posture
+        self.position = position
 
     def __str__(self):
         return f"auteur : {self.auteur}, cible : {self.cible}, capacite : ({self.capacite}), temps : {self.temps}"
@@ -40,13 +42,14 @@ class Combat():
         if self.affiche:
             print(txt, end=end)
 
-    def str_vie(self,personnage:perso.Personnage):
-        return f"{personnage.nom} ({personnage.vie} / {personnage.vie_total})"
+    def str_vie(self,personnage:Acteur):
+        perso = personnage.personnage
+        return f"{perso.nom},{personnage.posture} ({perso.vie} / {perso.vie_total})"
 
     def creation_print_liste(self,camps:list,nom_le_plus_long:int=0):
         result = []
         for personnage in camps:
-            perso = self.str_vie(personnage.personnage)
+            perso = self.str_vie(personnage)
             result.append(perso)
             if len(perso)>nom_le_plus_long:
                 nom_le_plus_long = len(perso)
@@ -98,7 +101,7 @@ class Combat():
         if capacite.cible_sois:
             self.printer(f" et recupère {-capacite.mana} de mana et {-capacite.endurance} d'endurance")
         else:
-            self.printer(f" et inflige {deg}")
+            self.printer(f" et inflige {deg} à {defenseur.personnage.nom}")
         defenseur.personnage.vie = max(0, round(defenseur.personnage.vie - deg, 2))
 
     def debut(self):
@@ -109,38 +112,30 @@ class Combat():
         liste_actions = []
         self.ecran_combat()
         for personnage in camp_1+camp_2:
-            perso = personnage.personnage
-            capacite = perso.capaciter_selecteur(perso.magie,perso.endurance)
-            if capacite.cible_sois:
-                cible = personnage
-            elif perso in camp_1:
-                cible = camp_2[aleatoire(0,len(camp_2)-1)]
-            else:
-                cible = camp_1[aleatoire(0,len(camp_1)-1)]
-
-            liste_actions.append(Action(auteur=personnage,cible=cible,temps=capacite.temps,capacite=capacite))
-
-        self.ecran_combat()
+            nouvelle_action = self.choix_action(personnage)
+            liste_actions.append(nouvelle_action)
 
 
         while(len(camp_1)>0 and len(camp_2)>0):
+            #Trouve le premier à attaquer
             action_plus_rapide = liste_actions[0]
             for action in liste_actions:
                 if action.temps < action_plus_rapide.temps:
                     action_plus_rapide = action
             liste_actions.remove(action_plus_rapide)
 
+            #Avance dans le temps
             self.temps_combat = self.temps_combat + action_plus_rapide.temps
-
             for action in liste_actions:
                 action.avance_temps(action_plus_rapide.temps)
 
-            personnage = action_plus_rapide.auteur
+            #Attaque
+            self.ecran_combat()
+            if action_plus_rapide.capacite != None:
+                self.attaque(action_plus_rapide)
+
+            #Traite la mort s'il y a
             cible = action_plus_rapide.cible
-
-
-            self.attaque(action_plus_rapide)
-
             if cible.personnage.vie <= 0:
                 if cible in camp_1:
                     camp_1.remove(cible)
@@ -150,19 +145,12 @@ class Combat():
                     camp_2_mort.append(cible)
                 self.printer(f"{cible.personnage.nom} est tombé{'e' if cible.personnage.genre == 'female' else ''} !")
 
+            #Nouvelle action
             if len(camp_1)>0 and len(camp_2)>0:
-                self.ecran_combat()
-                nouvelle_capacite = personnage.personnage.capaciter_selecteur(personnage.personnage.magie,personnage.personnage.endurance)
-                temps = nouvelle_capacite.temps
-
-                if nouvelle_capacite.cible_sois:
-                    cible = personnage
-                elif personnage in camp_1:
-                    cible = camp_2[aleatoire(0,len(camp_2))-1]
-                else:
-                    cible = camp_1[aleatoire(0,len(camp_1))-1]
-                nouvelle_action = Action(auteur=personnage, cible=cible, temps=temps, capacite=nouvelle_capacite)
+                personnage = action_plus_rapide.auteur
+                nouvelle_action = self.choix_action(personnage)
                 liste_actions.append(nouvelle_action)
+
         if(len(camp_1)>0):
             self.printer("Le camps 1 l'emporte !")
             self.victoire = self.camp_1
@@ -170,3 +158,39 @@ class Combat():
         else:
             self.printer("Le camps 2 l'emporte !")
             self.victoire = self.camp_2
+
+    def choix_action(self, acteur: Acteur):
+        choix = 0
+        if acteur.personnage.joueur:
+            self.printer("\n0 : Attaque\n1 : Changement de posture")
+            choix = choix_nombre(max = 1,question="Que voulez vous faire :")
+            self.printer("\n")
+
+        if choix == 0:
+            nouvelle_action= self.choix_attaque(acteur)
+
+        elif choix == 1:
+            nouvelle_action = self.choix_posture(acteur)
+
+        return nouvelle_action
+
+
+
+    def choix_attaque(self, acteur: Acteur):
+        nouvelle_capacite = acteur.personnage.capaciter_selecteur(acteur.personnage.magie,acteur.personnage.endurance)
+        temps = nouvelle_capacite.temps
+        if nouvelle_capacite.cible_sois:
+            cible = acteur
+        elif acteur in self.camp_1:
+            cible = self.camp_2[aleatoire(0, len(self.camp_2)) - 1]
+        else:
+            cible = self.camp_1[aleatoire(0, len(self.camp_1)) - 1]
+        nouvelle_action = Action(auteur=acteur, cible=cible, temps=temps, capacite=nouvelle_capacite)
+        return nouvelle_action
+
+
+    def choix_posture(self, acteur: Acteur):
+        temps = 5
+        acteur.changement_posture()
+        nouvelle_action = Action(auteur=acteur,cible=acteur, temps=temps)
+        return nouvelle_action

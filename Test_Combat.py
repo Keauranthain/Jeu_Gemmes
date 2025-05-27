@@ -4,8 +4,8 @@ from Combat import Combat
 import Personnage as perso
 
 if __name__ == '__main__':
-    humain_1 = perso.Personnage(joueur=True, nom="Titi")
-    humain_2 = perso.Personnage(joueur=False, nom="Toto")
+    humain_1 = perso.Personnage(joueur=True, nom="Joueur")
+    humain_2 = perso.Personnage(joueur=False, nom="Allier")
     goblin_1 = perso.Personnage(joueur=False, nom="Goblin 1", race="goblin")
     goblin_2 = perso.Personnage(joueur=False, nom="Goblin 2", race="goblin")
     goblin_3 = perso.Personnage(joueur=False, nom="Goblin 3", race="goblin")
