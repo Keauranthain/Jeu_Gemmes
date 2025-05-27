@@ -33,11 +33,11 @@ class Personnage():
 
     def capaciter_selecteur(self,mana,endurance):
         liste_temporaire = []
-        print(f"Endurance: {endurance}/{self.endurance_total}\nMana: {mana}/{self.mana_total}\n")
         for k in self.capacite:
             if k.mana<=mana and k.endurance<=endurance:
                 liste_temporaire.append(k)
         if self.joueur:
+            print(f"Endurance: {endurance}/{self.endurance_total}\nMana: {mana}/{self.mana_total}\n")
             for k in range (len(liste_temporaire)):
                 print(f"{k} : {liste_temporaire[k].nom}, mana : {liste_temporaire[k].mana},"
                       f" endurance : {liste_temporaire[k].endurance}")
