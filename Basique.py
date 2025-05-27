@@ -29,5 +29,15 @@ def obtenir_texte(langue: str, tag: str) -> str:
 
     return tag
 
+def choix_nombre(max: int,question:str,min:int=0 ) -> int:
+    result = -1
+    while result < min or result > max:
+        try:
+            result = int(input(question))
+        except:
+            print(f"Merci de mettre un entier entre {min} et {max}")
+    return result
+
+
 def aleatoire(low, high):
     return floor((high - low + 1) * random()) + low

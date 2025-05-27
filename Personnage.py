@@ -1,5 +1,6 @@
 from Capacite import capacite
 from Ressource import races_global
+from Basique import choix_nombre
 
 class Personnage():
     def __init__(self, nom:str, race:str = "humain", joueur = False,male:bool = False,female:bool = False):
@@ -39,11 +40,6 @@ class Personnage():
             for k in range (len(liste_temporaire)):
                 print(f"{k} : {liste_temporaire[k].nom}, mana : {liste_temporaire[k].mana},"
                       f" endurance : {liste_temporaire[k].endurance}")
-            result = -1
-            while result<0 or result>=len(liste_temporaire):
-                try:
-                    result = int(input("Capacité : "))
-                except:
-                    print(f"Merci de mettre un entier entre 0 et {len(liste_temporaire)-1}")
+            result = choix_nombre(max = len(liste_temporaire)-1, question = "Capacité : ")
             return liste_temporaire[result]
         return self.capacite[0]
