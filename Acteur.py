@@ -1,0 +1,53 @@
+from Basique import choix_nombre
+import Personnage as perso
+
+class Acteur():
+    def __init__(self,personnage:perso.Personnage=None):
+        self.personnage = personnage
+        self.posture = "neutre"
+        self.variation_posture = 1.25
+
+    def __str__(self):
+        return f"{self.personnage.nom}"
+
+    def changement_posture(self):
+        postures = ["neutre","offensive","defensive"]
+        for posture in postures:
+            if posture == self.posture:
+                postures.remove(self.posture)
+        for k in range (2):
+            print(f"{k}: {postures[k]}")
+        choix = choix_nombre(max = 1, question="Nouvelle posture : ")
+        self.posture = postures[choix]
+
+    def def_phy(self):
+        coef = 1
+        if self.posture == "offensive":
+            coef = coef/self.variation_posture
+        elif self.posture == "defensive":
+            coef = coef*self.variation_posture
+        return self.personnage.resistance*coef
+
+    def def_mag(self):
+        coef = 1
+        if self.posture == "offensive":
+            coef = coef / self.variation_posture
+        elif self.posture == "defensive":
+            coef = coef * self.variation_posture
+        return self.personnage.resistance_magique * coef
+
+    def atk_phy(self):
+        coef = 1
+        if self.posture == "offensive":
+            coef = coef * self.variation_posture
+        elif self.posture == "defensive":
+            coef = coef / self.variation_posture
+        return self.personnage.force * coef
+
+    def atk_mag(self):
+        coef = 1
+        if self.posture == "offensive":
+            coef = coef * self.variation_posture
+        elif self.posture == "defensive":
+            coef = coef / self.variation_posture
+        return self.personnage.magie * coef

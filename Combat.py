@@ -1,12 +1,15 @@
+from time import sleep
+
 import Personnage as perso
 import Capacite as capa
 import random as rnd
+from Acteur import Acteur
 
-from Basique import aleatoire
+from Basique import aleatoire, choix_nombre
 
 
 class Action():
-    def __init__(self,auteur:perso.Personnage=None,cible:perso.Personnage=None,capacite:capa.Capacite_class=None,temps:int=0):
+    def __init__(self,auteur:Acteur=None,cible:Acteur=None,capacite:capa.Capacite_class=None,temps:int=0):
         self.auteur = auteur
         self.cible = cible
         self.capacite = capacite
@@ -18,10 +21,15 @@ class Action():
     def avance_temps(self,avance:int):
         self.temps = self.temps-avance
 
+
 class Combat():
     def __init__(self,camps_1:list,camps_2:list,affiche:bool=True):
-        self.camp_1 = camps_1
-        self.camp_2 = camps_2
+        self.camp_1 = []
+        for personnage in camps_1:
+            self.camp_1.append(Acteur(personnage))
+        self.camp_2 = []
+        for personnage in camps_2:
+            self.camp_2.append(Acteur(personnage))
         self.camp_1_mort = []
         self.camp_2_mort = []
         self.temps_combat = 0
@@ -38,7 +46,7 @@ class Combat():
     def creation_print_liste(self,camps:list,nom_le_plus_long:int=0):
         result = []
         for personnage in camps:
-            perso = self.str_vie(personnage)
+            perso = self.str_vie(personnage.personnage)
             result.append(perso)
             if len(perso)>nom_le_plus_long:
                 nom_le_plus_long = len(perso)
@@ -49,11 +57,11 @@ class Combat():
 
         camp_1_str,nom_le_plus_long =self.creation_print_liste(self.camp_1)
         camp_2_str, nom_le_plus_long = self.creation_print_liste(self.camp_2, nom_le_plus_long)
-
-        self.printer(
-            f"{camp_1_str[0]}"
-            f" {n*' '}{(nom_le_plus_long-len(camp_1_str[0]))*' '} VS {(nom_le_plus_long-len(camp_2_str[0]))*' '}{n*' '} "
-            f"{camp_2_str[0]}")
+        premier_string = (f"{camp_1_str[0]}"
+                    f" {n*' '}{(nom_le_plus_long-len(camp_1_str[0]))*' '} VS {(nom_le_plus_long-len(camp_2_str[0]))*' '}{n*' '} "
+                    f"{camp_2_str[0]}")
+        self.printer(f"\n\n{len(premier_string)*'#'}\n")
+        self.printer(premier_string)
 
         for k in range(1,max(len(camp_1_str), len(camp_2_str))):
             if len(camp_1_str) > k:
@@ -65,7 +73,7 @@ class Combat():
                 self.printer(f"{(nom_le_plus_long-len(camp_2_str[k]))*' '}{camp_2_str[k]}")
             else:
                 self.printer(f"{' '*nom_le_plus_long}")
-        self.printer(f"\n\n")
+        self.printer(f"\n     {(len(premier_string)-10)*"-"}     \n")
 
     def temps(self,capacite,auteur):
         if capacite.magie > 0:
@@ -74,26 +82,26 @@ class Combat():
             t = (capacite.temps**2)/auteur.agilite
         return t
 
-    def degat(self,capacite,cible,auteur):
+    def degat(self,capacite,cible:Acteur,auteur:Acteur):
         if capacite.magie > 0:
-            d = (capacite.magie*auteur.magie**1.5)/(cible.resistance_magique**1.5)  * round(rnd.uniform(0.9, 1.1), 2)
+            d = (capacite.magie*auteur.atk_mag()**1.5)/(cible.def_mag()**1.5)  * round(rnd.uniform(0.9, 1.1), 2)
         else:
-            d = (capacite.force*auteur.force**1.5)/(cible.resistance**1.5)  * round(rnd.uniform(0.9, 1.1), 2)
+            d = (capacite.force*auteur.atk_phy()**1.5)/(cible.def_phy()**1.5)  * round(rnd.uniform(0.9, 1.1), 2)
         return round(d,2)
 
-    def attaque(self,action:Action,affiche:bool=True):
+    def attaque(self,action:Action):
         attaquant,defenseur,capacite=action.auteur,action.cible,action.capacite
         deg = self.degat(capacite, defenseur, attaquant)
-        attaquant.mana = min(attaquant.mana - capacite.mana, attaquant.mana_total)
-        attaquant.endurance = min(attaquant.endurance - capacite.endurance, attaquant.endurance_total)
-        self.printer(f"{attaquant.nom} utilise {capacite.nom}", end="")
+        attaquant.personnage.mana = min(attaquant.personnage.mana - capacite.mana, attaquant.personnage.mana_total)
+        attaquant.personnage.endurance = min(attaquant.personnage.endurance - capacite.endurance, attaquant.personnage.endurance_total)
+        self.printer(f"{attaquant.personnage.nom} utilise {capacite.nom}", end="")
         if capacite.cible_sois:
             self.printer(f" et recupère {-capacite.mana} de mana et {-capacite.endurance} d'endurance")
         else:
             self.printer(f" et inflige {deg}")
-        defenseur.vie = max(0, round(defenseur.vie - deg, 2))
+        defenseur.personnage.vie = max(0, round(defenseur.personnage.vie - deg, 2))
 
-    def debut(self,affiche:bool=True):
+    def debut(self):
         camp_1 = self.camp_1
         camp_2 = self.camp_2
         camp_1_mort = self.camp_1_mort
@@ -101,10 +109,11 @@ class Combat():
         liste_actions = []
         self.ecran_combat()
         for personnage in camp_1+camp_2:
-            capacite = personnage.capaciter_selecteur(personnage.magie,personnage.endurance)
+            perso = personnage.personnage
+            capacite = perso.capaciter_selecteur(perso.magie,perso.endurance)
             if capacite.cible_sois:
                 cible = personnage
-            elif personnage in camp_1:
+            elif perso in camp_1:
                 cible = camp_2[aleatoire(0,len(camp_2)-1)]
             else:
                 cible = camp_1[aleatoire(0,len(camp_1)-1)]
@@ -132,19 +141,18 @@ class Combat():
 
             self.attaque(action_plus_rapide)
 
-            if cible.vie <= 0:
+            if cible.personnage.vie <= 0:
                 if cible in camp_1:
                     camp_1.remove(cible)
                     camp_1_mort.append(cible)
-                    self.printer(f"{cible.nom} est tombé")
                 elif cible in camp_2:
                     camp_2.remove(cible)
                     camp_2_mort.append(cible)
-                    self.printer(f"{cible.nom} est tombé")
+                self.printer(f"{cible.personnage.nom} est tombé{'e' if cible.personnage.genre == 'female' else ''} !")
 
             if len(camp_1)>0 and len(camp_2)>0:
                 self.ecran_combat()
-                nouvelle_capacite = personnage.capaciter_selecteur(personnage.magie,personnage.endurance)
+                nouvelle_capacite = personnage.personnage.capaciter_selecteur(personnage.personnage.magie,personnage.personnage.endurance)
                 temps = nouvelle_capacite.temps
 
                 if nouvelle_capacite.cible_sois:
