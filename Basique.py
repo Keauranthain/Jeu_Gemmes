@@ -1,4 +1,6 @@
 import os
+from math import floor
+from random import random
 
 
 def obtenir_texte(langue: str, tag: str) -> str:
@@ -26,3 +28,6 @@ def obtenir_texte(langue: str, tag: str) -> str:
                     return valeur
 
     return tag
+
+def aleatoire(low, high):
+    return floor((high - low + 1) * random()) + low

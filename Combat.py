@@ -2,6 +2,9 @@ import Personnage as perso
 import Capacite as capa
 import random as rnd
 
+from Basique import aleatoire
+
+
 class Action():
     def __init__(self,auteur:perso.Personnage=None,cible:perso.Personnage=None,capacite:capa.Capacite_class=None,temps:int=0):
         self.auteur = auteur
@@ -102,9 +105,9 @@ class Combat():
             if capacite.cible_sois:
                 cible = personnage
             elif personnage in camp_1:
-                cible = camp_2[rnd.randint(0,len(camp_2)-1)]
+                cible = camp_2[aleatoire(0,len(camp_2)-1)]
             else:
-                cible = camp_1[rnd.randint(0,len(camp_1)-1)]
+                cible = camp_1[aleatoire(0,len(camp_1)-1)]
 
             liste_actions.append(Action(auteur=personnage,cible=cible,temps=capacite.temps,capacite=capacite))
 
@@ -147,9 +150,9 @@ class Combat():
                 if nouvelle_capacite.cible_sois:
                     cible = personnage
                 elif personnage in camp_1:
-                    cible = camp_2[rnd.randint(0,len(camp_2))-1]
+                    cible = camp_2[aleatoire(0,len(camp_2))-1]
                 else:
-                    cible = camp_1[rnd.randint(0,len(camp_1))-1]
+                    cible = camp_1[aleatoire(0,len(camp_1))-1]
                 nouvelle_action = Action(auteur=personnage, cible=cible, temps=temps, capacite=nouvelle_capacite)
                 liste_actions.append(nouvelle_action)
         if(len(camp_1)>0):
