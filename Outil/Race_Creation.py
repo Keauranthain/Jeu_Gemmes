@@ -18,6 +18,8 @@ def sauvegarder_races(races):
         json.dump(races, f, indent=2, ensure_ascii=False)
 
 def main():
+    races = charger_races()
+
     def charger_race_selection(event):
         race = combo_race.get()
         if race not in races:
@@ -25,64 +27,58 @@ def main():
         champ_nom.delete(0, tk.END)
         champ_nom.insert(0, race)
         data = races[race]
-
-        check_var.set(data.get("magique", False))
-
+        check_var.set(1 if data.get("magique", False) else 0)
+        if check_var.get():
+            check_magie.select()
+        else:
+            check_magie.deselect()
         for cle in champs_normaux:
-            for type_ in ["", "_male", "_female"]:
-                champ = cle + type_ if type_ else cle
-                val = data.get(champ, "")
-                entrees[cle][type_].delete(0, tk.END)
-                entrees[cle][type_].insert(0, str(val))
-
+            for suffix in ["", "_male", "_female"]:
+                entree = entrees[cle][suffix]
+                val = data.get(cle + suffix, "")
+                entree.delete(0, tk.END)
+                entree.insert(0, str(val))
         for cle in tranches_age:
-            val = data.get(cle, "")
-            entrees[cle][""].delete(0, tk.END)
-            entrees[cle][""].insert(0, str(val))
-
-        capacite = data.get("capacite_base", [])
+            entree = entrees[cle][""]
+            entree.delete(0, tk.END)
+            entree.insert(0, str(data.get(cle, "")))
         entree_capacite.delete(0, tk.END)
-        entree_capacite.insert(0, ", ".join(capacite))
+        entree_capacite.insert(0, ", ".join(data.get("capacite_base", [])))
 
     def sauvegarder_race():
         race = champ_nom.get().strip()
         if not race:
             messagebox.showerror("Erreur", "Nom de race requis.")
             return
-
-        nouvelle_race = {"magique": check_var.get()}
-
+        nouvelle = {"magique": bool(check_var.get())}
         for cle in champs_normaux:
-            for type_ in ["", "_male", "_female"]:
-                entree = entrees[cle][type_]
-                texte = entree.get().strip()
+            for suffix in ["", "_male", "_female"]:
+                texte = entrees[cle][suffix].get().strip()
                 if texte == "":
                     continue
-                champ = cle + type_ if type_ else cle
+                champ = cle + suffix
                 if texte.isdigit():
-                    nouvelle_race[champ] = int(texte)
+                    nouvelle[champ] = int(texte)
                 else:
                     try:
-                        nouvelle_race[champ] = float(texte)
-                    except:
-                        nouvelle_race[champ] = texte
-
+                        nouvelle[champ] = float(texte)
+                    except ValueError:
+                        nouvelle[champ] = texte
         for cle in tranches_age:
             texte = entrees[cle][""].get().strip()
-            if texte:
-                if texte.isdigit():
-                    nouvelle_race[cle] = int(texte)
-                else:
-                    try:
-                        nouvelle_race[cle] = float(texte)
-                    except:
-                        nouvelle_race[cle] = texte
-
+            if texte == "":
+                continue
+            if texte.isdigit():
+                nouvelle[cle] = int(texte)
+            else:
+                try:
+                    nouvelle[cle] = float(texte)
+                except ValueError:
+                    nouvelle[cle] = texte
         capacite_texte = entree_capacite.get().strip()
         if capacite_texte:
-            nouvelle_race["capacite_base"] = [x.strip() for x in capacite_texte.split(",") if x.strip()]
-
-        races[race] = nouvelle_race
+            nouvelle["capacite_base"] = [x.strip() for x in capacite_texte.split(",") if x.strip()]
+        races[race] = nouvelle
         sauvegarder_races(races)
         messagebox.showinfo("Succès", f"Race '{race}' enregistrée.")
         combo_race["values"] = list(races.keys())
@@ -92,10 +88,7 @@ def main():
         "force", "agilite", "resistance", "charisme",
         "magie", "resistance_magique", "incantation", "intelligence"
     ]
-
     tranches_age = ["enfance", "adolescence", "adulte", "vieillesse", "esperance_de_vie"]
-
-    races = charger_races()
 
     fenetre = tk.Tk()
     fenetre.title("Éditeur de Races")
@@ -104,13 +97,17 @@ def main():
     champ_nom = tk.Entry(fenetre, width=20)
     champ_nom.grid(row=0, column=1)
 
-    combo_race = ttk.Combobox(fenetre, values=list(races.keys()))
+    combo_race = ttk.Combobox(fenetre, values=list(races.keys()), state="readonly")
     combo_race.grid(row=0, column=2, columnspan=2)
     combo_race.bind("<<ComboboxSelected>>", charger_race_selection)
 
-    check_var = tk.BooleanVar()
+    check_var = tk.IntVar(value=0)
     check_magie = tk.Checkbutton(fenetre, text="Magique", variable=check_var)
     check_magie.grid(row=1, column=0, columnspan=4, sticky="w")
+    if check_var.get():
+        check_magie.select()
+    else:
+        check_magie.deselect()
 
     tk.Label(fenetre, text="Champ").grid(row=2, column=0)
     tk.Label(fenetre, text="Base").grid(row=2, column=1)
@@ -142,7 +139,9 @@ def main():
     entree_capacite.grid(row=ligne, column=2, columnspan=2)
     ligne += 1
 
-    bouton = tk.Button(fenetre, text="Sauvegarder la race", command=sauvegarder_race)
-    bouton.grid(row=ligne, column=0, columnspan=4)
+    tk.Button(fenetre, text="Sauvegarder la race", command=sauvegarder_race).grid(row=ligne, column=0, columnspan=4)
 
     fenetre.mainloop()
+
+if __name__ == "__main__":
+    main()
