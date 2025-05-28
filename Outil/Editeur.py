@@ -1,5 +1,6 @@
 import tkinter as tk
 from Race_Creation import main as ouvrir_editeur_race
+from Capacite_Creation import main as lancer_editeur_capacite
 
 def lancer_editeur_race():
     ouvrir_editeur_race()
@@ -10,6 +11,9 @@ def main():
 
     bouton_race = tk.Button(fenetre, text="Éditeur de Races", command=lancer_editeur_race, width=30, height=2)
     bouton_race.pack(padx=20, pady=20)
+
+    bouton_capacite = tk.Button(fenetre, text="Éditeur de Capacités", command=lancer_editeur_capacite, width=30,height=2)
+    bouton_capacite.pack(padx=20, pady=10)
 
     fenetre.mainloop()
 
