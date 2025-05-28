@@ -24,8 +24,8 @@
     "vieillesse": 60,
     "esperance_de_vie": 80,
     "capacite_base": [
-      "coup_de_poing_capacite",
-      "repos_capacite"
+      "bas_coup_de_poing_capacite",
+      "bas_repos_capacite"
     ]
   },
   "goblin": {
@@ -51,7 +51,7 @@
     "vieillesse": 35,
     "esperance_de_vie": 45,
     "capacite_base": [
-      "griffure_phy_p3_v6_capacite"
+      "spe_phy_p3_v6_capacite"
     ]
   }
 }

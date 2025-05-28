@@ -1,56 +1,323 @@
 {
+  "capacite_basique": {
+    "bas_coup_de_poing_capacite": {
+      "nom": "Coup de poing",
+      "force": 2,
+      "temps": 7,
+      "magique": false,
+      "endurance": 2
+    },
+    "bas_repos_capacite": {
+      "nom": "Repos",
+      "mana": -2,
+      "endurance": -2,
+      "temps": 7,
+      "cible_sois": true,
+      "cible_autre": false
+    }
+  },
   "capacite_magique": {
-    "3,3": "etincelle_mag_p3_v3_capacite",
-    "3,4": "impulsion_mag_p4_v3_capacite",
-    "3,5": "onde_mag_p5_v3_capacite",
-    "3,6": "sillage_mag_p6_v3_capacite",
-    "3,7": "boule_mag_p7_v3_capacite",
-    "4,3": "soupir_mag_p3_v4_capacite",
-    "4,4": "fracture_mag_p4_v4_capacite",
-    "4,5": "rayon_mag_p5_v4_capacite",
-    "4,6": "voile_mag_p6_v4_capacite",
-    "4,7": "orbe_mag_p7_v4_capacite",
-    "5,3": "murmure_mag_p3_v5_capacite",
-    "5,4": "flux_mag_p4_v5_capacite",
-    "5,5": "nuage_mag_p5_v5_capacite",
-    "5,6": "halo_mag_p6_v5_capacite",
-    "5,7": "eclat_mag_p7_v5_capacite",
-    "6,3": "anneau_mag_p3_v6_capacite",
-    "6,4": "spirale_mag_p4_v6_capacite",
-    "6,5": "sphere_mag_p5_v6_capacite",
-    "6,6": "vague_mag_p6_v6_capacite",
-    "6,7": "deferlement_mag_p7_v6_capacite",
-    "7,3": "lueur_mag_p3_v7_capacite",
-    "7,4": "breche_mag_p4_v7_capacite",
-    "7,5": "incantation_mag_p5_v7_capacite",
-    "7,6": "cataclysme_mag_p6_v7_capacite",
-    "7,7": "apotheose_mag_p7_v7_capacite"
+    "spe_mag_p3_v3_capacite": {
+      "nom": "etincelle_mag_p3_v3_capacite",
+      "temps": 3,
+      "magique": true,
+      "magie": 3
+    },
+    "spe_mag_p4_v3_capacite": {
+      "nom": "impulsion_mag_p4_v3_capacite",
+      "temps": 3,
+      "magique": true,
+      "magie": 4
+    },
+    "spe_mag_p5_v3_capacite": {
+      "nom": "onde_mag_p5_v3_capacite",
+      "temps": 3,
+      "magique": true,
+      "magie": 5
+    },
+    "spe_mag_p6_v3_capacite": {
+      "nom": "sillage_mag_p6_v3_capacite",
+      "temps": 3,
+      "magique": true,
+      "magie": 6
+    },
+    "spe_mag_p7_v3_capacite": {
+      "nom": "boule_mag_p7_v3_capacite",
+      "temps": 3,
+      "magique": true,
+      "magie": 7
+    },
+    "spe_mag_p3_v4_capacite": {
+      "nom": "soupir_mag_p3_v4_capacite",
+      "temps": 4,
+      "magique": true,
+      "magie": 3
+    },
+    "spe_mag_p4_v4_capacite": {
+      "nom": "fracture_mag_p4_v4_capacite",
+      "temps": 4,
+      "magique": true,
+      "magie": 4
+    },
+    "spe_mag_p5_v4_capacite": {
+      "nom": "rayon_mag_p5_v4_capacite",
+      "temps": 4,
+      "magique": true,
+      "magie": 5
+    },
+    "spe_mag_p6_v4_capacite": {
+      "nom": "voile_mag_p6_v4_capacite",
+      "temps": 4,
+      "magique": true,
+      "magie": 6
+    },
+    "spe_mag_p7_v4_capacite": {
+      "nom": "orbe_mag_p7_v4_capacite",
+      "temps": 4,
+      "magique": true,
+      "magie": 7
+    },
+    "spe_mag_p3_v5_capacite": {
+      "nom": "murmure_mag_p3_v5_capacite",
+      "temps": 5,
+      "magique": true,
+      "magie": 3
+    },
+    "spe_mag_p4_v5_capacite": {
+      "nom": "flux_mag_p4_v5_capacite",
+      "temps": 5,
+      "magique": true,
+      "magie": 4
+    },
+    "spe_mag_p5_v5_capacite": {
+      "nom": "nuage_mag_p5_v5_capacite",
+      "temps": 5,
+      "magique": true,
+      "magie": 5
+    },
+    "spe_mag_p6_v5_capacite": {
+      "nom": "halo_mag_p6_v5_capacite",
+      "temps": 5,
+      "magique": true,
+      "magie": 6
+    },
+    "spe_mag_p7_v5_capacite": {
+      "nom": "eclat_mag_p7_v5_capacite",
+      "temps": 5,
+      "magique": true,
+      "magie": 7
+    },
+    "spe_mag_p3_v6_capacite": {
+      "nom": "anneau_mag_p3_v6_capacite",
+      "temps": 6,
+      "magique": true,
+      "magie": 3
+    },
+    "spe_mag_p4_v6_capacite": {
+      "nom": "spirale_mag_p4_v6_capacite",
+      "temps": 6,
+      "magique": true,
+      "magie": 4
+    },
+    "spe_mag_p5_v6_capacite": {
+      "nom": "sphere_mag_p5_v6_capacite",
+      "temps": 6,
+      "magique": true,
+      "magie": 5
+    },
+    "spe_mag_p6_v6_capacite": {
+      "nom": "vague_mag_p6_v6_capacite",
+      "temps": 6,
+      "magique": true,
+      "magie": 6
+    },
+    "spe_mag_p7_v6_capacite": {
+      "nom": "deferlement_mag_p7_v6_capacite",
+      "temps": 6,
+      "magique": true,
+      "magie": 7
+    },
+    "spe_mag_p3_v7_capacite": {
+      "nom": "lueur_mag_p3_v7_capacite",
+      "temps": 7,
+      "magique": true,
+      "magie": 3
+    },
+    "spe_mag_p4_v7_capacite": {
+      "nom": "breche_mag_p4_v7_capacite",
+      "temps": 7,
+      "magique": true,
+      "magie": 4
+    },
+    "spe_mag_p5_v7_capacite": {
+      "nom": "incantation_mag_p5_v7_capacite",
+      "temps": 7,
+      "magique": true,
+      "magie": 5
+    },
+    "spe_mag_p6_v7_capacite": {
+      "nom": "cataclysme_mag_p6_v7_capacite",
+      "temps": 7,
+      "magique": true,
+      "magie": 6
+    },
+    "spe_mag_p7_v7_capacite": {
+      "nom": "apotheose_mag_p7_v7_capacite",
+      "temps": 7,
+      "magique": true,
+      "magie": 7
+    }
   },
   "capacite_physique": {
-    "3,3": "frappe_phy_p3_v3_capacite",
-    "3,4": "impact_phy_p4_v3_capacite",
-    "3,5": "fracture_phy_p5_v3_capacite",
-    "3,6": "dechainement_phy_p6_v3_capacite",
-    "3,7": "destruction_phy_p7_v3_capacite",
-    "4,3": "choc_phy_p3_v4_capacite",
-    "4,4": "torsion_phy_p4_v4_capacite",
-    "4,5": "affrontement_phy_p5_v4_capacite",
-    "4,6": "ecrasement_phy_p6_v4_capacite",
-    "4,7": "carnage_phy_p7_v4_capacite",
-    "5,3": "tacle_phy_p3_v5_capacite",
-    "5,4": "percee_phy_p4_v5_capacite",
-    "5,5": "assaut_phy_p5_v5_capacite",
-    "5,6": "affrontement_phy_p6_v5_capacite",
-    "5,7": "enfoncement_phy_p7_v5_capacite",
-    "6,3": "griffure_phy_p3_v6_capacite",
-    "6,4": "poussee_phy_p4_v6_capacite",
-    "6,5": "heurt_phy_p5_v6_capacite",
-    "6,6": "tranche_phy_p6_v6_capacite",
-    "6,7": "ravage_phy_p7_v6_capacite",
-    "7,3": "coup_phy_p3_v7_capacite",
-    "7,4": "tapotement_phy_p4_v7_capacite",
-    "7,5": "geste_phy_p5_v7_capacite",
-    "7,6": "retard_phy_p6_v7_capacite",
-    "7,7": "charge_phy_p7_v7_capacite"
+    "spe_phy_p3_v3_capacite": {
+      "nom": "frappe_phy_p3_v3_capacite",
+      "temps": 3,
+      "magique": false,
+      "force": 3
+    },
+    "spe_phy_p4_v3_capacite": {
+      "nom": "impact_phy_p4_v3_capacite",
+      "temps": 3,
+      "magique": false,
+      "force": 4
+    },
+    "spe_phy_p5_v3_capacite": {
+      "nom": "fracture_phy_p5_v3_capacite",
+      "temps": 3,
+      "magique": false,
+      "force": 5
+    },
+    "spe_phy_p6_v3_capacite": {
+      "nom": "dechainement_phy_p6_v3_capacite",
+      "temps": 3,
+      "magique": false,
+      "force": 6
+    },
+    "spe_phy_p7_v3_capacite": {
+      "nom": "destruction_phy_p7_v3_capacite",
+      "temps": 3,
+      "magique": false,
+      "force": 7
+    },
+    "spe_phy_p3_v4_capacite": {
+      "nom": "choc_phy_p3_v4_capacite",
+      "temps": 4,
+      "magique": false,
+      "force": 3
+    },
+    "spe_phy_p4_v4_capacite": {
+      "nom": "torsion_phy_p4_v4_capacite",
+      "temps": 4,
+      "magique": false,
+      "force": 4
+    },
+    "spe_phy_p5_v4_capacite": {
+      "nom": "affrontement_phy_p5_v4_capacite",
+      "temps": 4,
+      "magique": false,
+      "force": 5
+    },
+    "spe_phy_p6_v4_capacite": {
+      "nom": "ecrasement_phy_p6_v4_capacite",
+      "temps": 4,
+      "magique": false,
+      "force": 6
+    },
+    "spe_phy_p7_v4_capacite": {
+      "nom": "carnage_phy_p7_v4_capacite",
+      "temps": 4,
+      "magique": false,
+      "force": 7
+    },
+    "spe_phy_p3_v5_capacite": {
+      "nom": "tacle_phy_p3_v5_capacite",
+      "temps": 5,
+      "magique": false,
+      "force": 3
+    },
+    "spe_phy_p4_v5_capacite": {
+      "nom": "percee_phy_p4_v5_capacite",
+      "temps": 5,
+      "magique": false,
+      "force": 4
+    },
+    "spe_phy_p5_v5_capacite": {
+      "nom": "assaut_phy_p5_v5_capacite",
+      "temps": 5,
+      "magique": false,
+      "force": 5
+    },
+    "spe_phy_p6_v5_capacite": {
+      "nom": "affrontement_phy_p6_v5_capacite",
+      "temps": 5,
+      "magique": false,
+      "force": 6
+    },
+    "spe_phy_p7_v5_capacite": {
+      "nom": "enfoncement_phy_p7_v5_capacite",
+      "temps": 5,
+      "magique": false,
+      "force": 7
+    },
+    "spe_phy_p3_v6_capacite": {
+      "nom": "griffure_phy_p3_v6_capacite",
+      "temps": 6,
+      "magique": false,
+      "force": 3
+    },
+    "spe_phy_p4_v6_capacite": {
+      "nom": "poussee_phy_p4_v6_capacite",
+      "temps": 6,
+      "magique": false,
+      "force": 4
+    },
+    "spe_phy_p5_v6_capacite": {
+      "nom": "heurt_phy_p5_v6_capacite",
+      "temps": 6,
+      "magique": false,
+      "force": 5
+    },
+    "spe_phy_p6_v6_capacite": {
+      "nom": "tranche_phy_p6_v6_capacite",
+      "temps": 6,
+      "magique": false,
+      "force": 6
+    },
+    "spe_phy_p7_v6_capacite": {
+      "nom": "ravage_phy_p7_v6_capacite",
+      "temps": 6,
+      "magique": false,
+      "force": 7
+    },
+    "spe_phy_p3_v7_capacite": {
+      "nom": "coup_phy_p3_v7_capacite",
+      "temps": 7,
+      "magique": false,
+      "force": 3
+    },
+    "spe_phy_p4_v7_capacite": {
+      "nom": "tapotement_phy_p4_v7_capacite",
+      "temps": 7,
+      "magique": false,
+      "force": 4
+    },
+    "spe_phy_p5_v7_capacite": {
+      "nom": "geste_phy_p5_v7_capacite",
+      "temps": 7,
+      "magique": false,
+      "force": 5
+    },
+    "spe_phy_p6_v7_capacite": {
+      "nom": "retard_phy_p6_v7_capacite",
+      "temps": 7,
+      "magique": false,
+      "force": 6
+    },
+    "spe_phy_p7_v7_capacite": {
+      "nom": "charge_phy_p7_v7_capacite",
+      "temps": 7,
+      "magique": false,
+      "force": 7
+    }
   }
 }

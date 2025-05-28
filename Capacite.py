@@ -1,64 +1,50 @@
-from Basique import obtenir_texte
-from Ressource import capacites_global
+import json
+import os
 
 capacites_jeu = {}
 
-def capacite(clef:str):
-    return capacites_jeu[clef]
-
-def trouve_clef_capacite(temps:int,puissance:int,magique:bool=False,physique:bool=False):
-    if magique:
-        clef = capacites_global["capacite_magique"][f"{temps},{puissance}"]
-    else:
-        clef = capacites_global["capacite_physique"][f"{temps},{puissance}"]
-    return clef
-
-def trouve_nom_capacite(temps:int,puissance:int,magique:bool=False,physique:bool=False):
-    return obtenir_texte(trouve_clef_capacite(temps,puissance,magique,physique))
-
-
 class Capacite_class():
-    def __init__(self,nom,clef,force:int = 0,magie:int = 0,temps:int = 0,
-                 cible_autre:bool = True,cible_sois:bool = False,soin:bool = False,
-                 magique:bool = True,mana:int = 0,endurance:int=0):
+    def __init__(self, nom, clef, force=0, magie=0, temps=0,
+                 cible_autre=True, cible_sois=False, soin=False,
+                 magique=True, mana=None, endurance=None):
         self.nom = nom
         self.clef = clef
         self.force = force
         self.magie = magie
-        if mana == 0 :
-            self.mana = magie*(temps-10)*-1
-        else:
-            self.mana = mana
-        if endurance == 0 :
-            self.endurance = force*(temps-10)*-1
-        else:
-            self.endurance = endurance
         self.temps = temps
         self.cible_autre = cible_autre
         self.cible_sois = cible_sois
         self.soin = soin
         self.magique = magique
 
+        self.mana = mana if mana is not None else magie * (temps - 10) * -1
+        self.endurance = endurance if endurance is not None else force * (temps - 10) * -1
+
     def __str__(self):
         return f"nom : {self.nom}, clef : {self.clef}, force : {self.force}, magie : {self.magie}, endurance : {self.endurance}, mana : {self.mana}, temps : {self.temps}, cible sois : {self.cible_sois}, magique : {self.magique}"
 
-def capacite_basique():
-    capacite = Capacite_class("Coup de poing", "coup_de_poing_capacite", force=2, temps=7,magique=False,endurance=2)
-    capacites_jeu["coup_de_poing_capacite"] =  capacite
-    capacite = Capacite_class("Repos", "repos_capacite",mana  = -2, endurance = -2,
-                              temps= 7,cible_sois = True,cible_autre = False)
-    capacites_jeu["repos_capacite"] = capacite
-
+def capacite(clef: str):
+    return capacites_jeu[clef]
 
 def setup():
-    for temps in range (3,8):
-        for puissance in range (3,8):
-            clef = trouve_clef_capacite(temps,puissance)
-            nom = obtenir_texte("fr",clef)
-            capacites_jeu[clef]=Capacite_class(nom,clef,force=puissance,temps=temps)
-            clef = trouve_clef_capacite(temps, puissance,magique=True)
-            nom = obtenir_texte("fr",clef)
-            capacites_jeu[clef] = Capacite_class(nom, clef, magie=puissance, temps=temps)
-    capacite_basique()
+    chemin_json = "ressources/capacite.json"
+    with open(chemin_json, encoding="utf-8") as f:
+        data = json.load(f)
+
+    for section in ["capacite_basique", "capacite_magique", "capacite_physique"]:
+        for clef, contenu in data.get(section, {}).items():
+            capacites_jeu[clef] = Capacite_class(
+                nom=contenu.get("nom", clef),
+                clef=clef,
+                force=contenu.get("force", 0),
+                magie=contenu.get("magie", 0),
+                temps=contenu.get("temps", 0),
+                cible_autre=contenu.get("cible_autre", True),
+                cible_sois=contenu.get("cible_sois", False),
+                soin=contenu.get("soin", False),
+                magique=contenu.get("magique", True),
+                mana=contenu.get("mana"),
+                endurance=contenu.get("endurance")
+            )
 
 setup()
