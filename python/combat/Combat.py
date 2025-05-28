@@ -1,11 +1,8 @@
-from time import sleep
-
-import Personnage as perso
-import Capacite as capa
+from python import Capacite as capa
 import random as rnd
-from Acteur import Acteur
+from python.combat.Acteur import Acteur
 
-from Basique import aleatoire, choix_nombre
+from python.Basique import aleatoire, choix_nombre
 
 
 class Action():

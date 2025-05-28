@@ -1,6 +1,6 @@
-from Capacite import capacite
-from Ressource import races_global
-from Basique import choix_nombre
+from python.Capacite import capacite
+from python.Ressource import races_global
+from python.Basique import choix_nombre
 
 class Personnage():
     def __init__(self, nom:str, race:str = "humain", joueur = False,male:bool = False,female:bool = False):

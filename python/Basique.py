@@ -4,7 +4,7 @@ from random import random
 
 
 def obtenir_texte(langue: str, tag: str) -> str:
-    dossier_langue = os.path.join("langue", langue)
+    dossier_langue = os.path.join("../langue", langue)
 
     if not os.path.isdir(dossier_langue):
         return tag

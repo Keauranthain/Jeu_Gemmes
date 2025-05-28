@@ -1,7 +1,7 @@
 import time
 
-from Combat import Combat
-import Personnage as perso
+from python.combat.Combat import Combat
+from python import Personnage as perso
 
 if __name__ == '__main__':
     humain_1 = perso.Personnage(joueur=True, nom="Joueur")

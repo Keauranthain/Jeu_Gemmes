@@ -1,6 +1,6 @@
 import tkinter as tk
-from Race_Creation import main as ouvrir_editeur_race
-from Capacite_Creation import main as lancer_editeur_capacite
+from editeur.Race_Creation import main as ouvrir_editeur_race
+from editeur.Capacite_Creation import main as lancer_editeur_capacite
 
 def lancer_editeur_race():
     ouvrir_editeur_race()

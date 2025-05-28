@@ -1,5 +1,6 @@
-from Basique import choix_nombre
-import Personnage as perso
+from python.Basique import choix_nombre
+from python import Personnage as perso
+
 
 class Acteur():
     def __init__(self,personnage:perso.Personnage=None):
