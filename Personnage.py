@@ -11,21 +11,26 @@ class Personnage():
             self.genre = "female"
         self.nom = nom
         self.race = race
-        self.magie = races_global[race]["magie"] + races_global[race][f"magie_{self.genre}"]
-        self.resistance_magique = races_global[race]["resistance_magique"] + races_global[race][f"resistance_magique_{self.genre}"]
-        self.incantation = races_global[race]["incantation"] + races_global[race][f"incantation_{self.genre}"]
-        self.mana_total = races_global[race]["mana"] + races_global[race][f"mana_{self.genre}"]
+
+        base = races_global.get(race, {})
+
+        self.magie = base.get("magie", 0) + base.get(f"magie_{self.genre}", 0)
+        self.resistance_magique = base.get("resistance_magique", 0) + base.get(f"resistance_magique_{self.genre}", 0)
+        self.incantation = base.get("incantation", 0) + base.get(f"incantation_{self.genre}", 0)
+        self.mana_total = base.get("mana", 0) + base.get(f"mana_{self.genre}", 0)
         self.mana = self.mana_total
-        self.force = races_global[race]["force"] + races_global[race][f"force_{self.genre}"]
-        self.resistance = races_global[race]["resistance"] + races_global[race][f"resistance_{self.genre}"]
-        self.agilite = races_global[race]["agilite"] + races_global[race][f"agilite_{self.genre}"]
-        self.endurance_total = races_global[race]["endurance"] + races_global[race][f"endurance_{self.genre}"]
+        self.force = base.get("force", 0) + base.get(f"force_{self.genre}", 0)
+        self.resistance = base.get("resistance", 0) + base.get(f"resistance_{self.genre}", 0)
+        self.agilite = base.get("agilite", 0) + base.get(f"agilite_{self.genre}", 0)
+        self.endurance_total = base.get("endurance", 0) + base.get(f"endurance_{self.genre}", 0)
         self.endurance = self.endurance_total
-        self.vie_total = races_global[race]["vie"] + races_global[race][f"vie_{self.genre}"]
+        self.vie_total = base.get("vie", 0) + base.get(f"vie_{self.genre}", 0)
         self.vie = self.vie_total
+
         self.capacite = []
-        for capacite_clef in races_global[race]["capacite_base"]:
+        for capacite_clef in base.get("capacite_base", []):
             self.capacite.append(capacite(capacite_clef))
+
         self.joueur = joueur
 
     def __str__(self):
