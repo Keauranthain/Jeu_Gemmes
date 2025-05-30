@@ -4,9 +4,9 @@ from python import Personnage as perso
 
 class Acteur():
     def __init__(self,personnage:perso.Personnage=None):
-        self.personnage = personnage
-        self.posture = "neutre"
-        self.variation_posture = 1.25
+        self.personnage:perso.Personnage = personnage
+        self.posture:str = "neutre"
+        self.variation_posture:float = 1.25
 
     def __str__(self):
         return f"{self.personnage.nom}"
