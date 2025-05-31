@@ -2,6 +2,7 @@ import time
 
 from python.combat.Combat import Combat
 from python import Personnage as perso
+from python.combat.Equipe import Equipe
 
 if __name__ == '__main__':
     humain_1 = perso.Personnage(joueur=True, nom="Joueur")
@@ -9,9 +10,9 @@ if __name__ == '__main__':
     goblin_1 = perso.Personnage(joueur=False, nom="Goblin 1", race="goblin")
     goblin_2 = perso.Personnage(joueur=False, nom="Goblin 2", race="goblin")
     goblin_3 = perso.Personnage(joueur=False, nom="Goblin 3", race="goblin")
-    humains = [humain_1, humain_2]
-    goblins = [goblin_1, goblin_2, goblin_3]
-    c = Combat(humains, goblins)
+    equipe_humain = Equipe([humain_1], [humain_2])
+    equipe_goblin = Equipe([goblin_1, goblin_2, goblin_3])
+    c = Combat(equipe_humain, equipe_goblin)
     start = time.time()
     c.debut()
     end = time.time()

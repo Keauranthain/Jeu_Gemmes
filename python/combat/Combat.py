@@ -1,8 +1,11 @@
 from python import Capacite as capa
 import random as rnd
+
+from python.Capacite import Capacite_class
 from python.combat.Acteur import Acteur
 
 from python.Basique import aleatoire, choix_nombre
+from python.combat.Equipe import Equipe
 
 
 class Action():
@@ -22,13 +25,11 @@ class Action():
 
 
 class Combat():
-    def __init__(self,camps_1:list,camps_2:list,affiche:bool=True):
-        self.camp_1 = []
-        for personnage in camps_1:
-            self.camp_1.append(Acteur(personnage))
-        self.camp_2 = []
-        for personnage in camps_2:
-            self.camp_2.append(Acteur(personnage))
+    def __init__(self,camps_1:Equipe,camps_2:Equipe,affiche:bool=True):
+        self.equipe_1:Equipe = camps_1
+        self.equipe_2:Equipe = camps_2
+        self.camp_1 = camps_1.liste_combat()
+        self.camp_2 = camps_2.liste_combat()
         self.camp_1_mort = []
         self.camp_2_mort = []
         self.temps_combat = 0
@@ -82,11 +83,21 @@ class Combat():
             t = (capacite.temps**2)/auteur.agilite
         return t
 
-    def degat(self,capacite,cible:Acteur,auteur:Acteur):
+    def trouve_equipe(self,acteur:Acteur)->Equipe:
+        if acteur in self.equipe_1:
+            return self.equipe_1
+        return self.equipe_2
+
+    def degat(self,capacite:Capacite_class,cible:Acteur,auteur:Acteur):
+        equipe_atk = self.trouve_equipe(auteur)
+        equipe_def = self.trouve_equipe(cible)
         if capacite.magie > 0:
-            d = (capacite.magie*auteur.atk_mag()**1.5)/(cible.def_mag()**1.5)  * round(rnd.uniform(0.9, 1.1), 2)
+            resistance = equipe_def.defense_magique(cible,equipe_atk.obtenir_ligne(auteur))
+            d = (capacite.magie*auteur.atk_mag()**1.5)/(resistance**1.5)  * round(rnd.uniform(0.9, 1.1), 2)
         else:
-            d = (capacite.force*auteur.atk_phy()**1.5)/(cible.def_phy()**1.5)  * round(rnd.uniform(0.9, 1.1), 2)
+            resistance = equipe_def.defense(cible, equipe_atk.obtenir_ligne(auteur))
+            print(f"resistance : {resistance}")
+            d = (capacite.force*auteur.atk_phy()**1.5)/(resistance**1.5)  * round(rnd.uniform(0.9, 1.1), 2)
         return round(d,2)
 
     def attaque(self,action:Action):
@@ -127,11 +138,11 @@ class Combat():
                 action.avance_temps(action_plus_rapide.temps)
 
             #Attaque
-            self.ecran_combat()
             if action_plus_rapide.capacite != None:
                 self.attaque(action_plus_rapide)
 
             #Traite la mort s'il y a
+            self.ecran_combat()
             cible = action_plus_rapide.cible
             if cible.personnage.vie <= 0:
                 if cible in camp_1:
