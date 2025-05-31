@@ -130,6 +130,13 @@ class Equipe:
             result.append(perso)
         return result
 
+    def liste_casser(self,liste:list=None):
+        if liste != None:
+            liste.append(self.premiere_ligne_combat)
+            liste.append(self.deuxieme_ligne_combat)
+            liste.append(self.troisieme_ligne_combat)
+        return self.premiere_ligne_combat,self.deuxieme_ligne_combat,self.troisieme_ligne_combat
+
     def chute(self, perso: Acteur)->None:
         if perso in self.premiere_ligne_combat:
             self.premiere_ligne_combat.remove(perso)

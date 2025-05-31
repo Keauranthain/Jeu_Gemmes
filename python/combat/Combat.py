@@ -42,38 +42,96 @@ class Combat():
 
     def str_vie(self,personnage:Acteur):
         perso = personnage.personnage
-        return f"{perso.nom},{personnage.posture} ({perso.vie} / {perso.vie_total})"
+        return f"{perso.nom} ({perso.vie} / {perso.vie_total})"
 
-    def creation_print_liste(self,camps:list,nom_le_plus_long:int=0):
+    def str_titre(self,personnage:Acteur):
+        perso = personnage.personnage
+        return f"{personnage.posture}"
+
+    def creation_print_liste(self,camps:list,nom_le_plus_long:int=0,liste_la_plus_long:int=0):
         result = []
+        n = 0
         for personnage in camps:
             perso = self.str_vie(personnage)
+            result.append(perso)
+            n += 1
+            if len(perso)>nom_le_plus_long:
+                nom_le_plus_long = len(perso)
+        if n > liste_la_plus_long:
+            liste_la_plus_long = n
+        return result, nom_le_plus_long,liste_la_plus_long
+
+    def creation_print_liste_titre(self,camps:list,nom_le_plus_long:int=0):
+        result = []
+        for personnage in camps:
+            perso = self.str_titre(personnage)
             result.append(perso)
             if len(perso)>nom_le_plus_long:
                 nom_le_plus_long = len(perso)
         return result, nom_le_plus_long
 
-    def ecran_combat(self):
-        n = 20
+    def clean_des_liste_str(self,liste:list,taille_str:int,nombre_str:int):
+        for k in range(0,nombre_str):
+            if k<len(liste):
+                liste[k] = self.centre_str(liste[k],taille_str)
+            else:
+                liste.append(" "*taille_str)
 
-        camp_1_str,nom_le_plus_long =self.creation_print_liste(self.camp_1)
-        camp_2_str, nom_le_plus_long = self.creation_print_liste(self.camp_2, nom_le_plus_long)
-        premier_string = (f"{camp_1_str[0]}"
-                    f" {n*' '}{(nom_le_plus_long-len(camp_1_str[0]))*' '} VS {(nom_le_plus_long-len(camp_2_str[0]))*' '}{n*' '} "
-                    f"{camp_2_str[0]}")
+    def centre_str(self,string:str,taille_str:int):
+        return " "*((taille_str-len(string))//2+(taille_str-len(string))%2)+string+" "*((taille_str-len(string))//2)
+
+
+    def ecran_combat(self):
+        listes_acteurs = []
+        listes_nom = []
+        listes_titre = []
+        nom_le_plus_long, liste_la_plus_longue = 7, 0
+        self.equipe_1.liste_casser(listes_acteurs)
+        self.equipe_2.liste_casser(listes_acteurs)
+        for liste in listes_acteurs:
+            str_nom_liste, nom_le_plus_long, liste_la_plus_longue = self.creation_print_liste(liste,nom_le_plus_long,liste_la_plus_longue)
+            str_titre_liste, nom_le_plus_long =self.creation_print_liste_titre(liste, nom_le_plus_long)
+            listes_nom.append(str_nom_liste)
+            listes_titre.append(str_titre_liste)
+        n = 2
+        nom_le_plus_long += n * 2
+        for liste in listes_nom:
+            self.clean_des_liste_str(liste,nom_le_plus_long,liste_la_plus_longue)
+        for liste in listes_titre:
+            self.clean_des_liste_str(liste,nom_le_plus_long,liste_la_plus_longue)
+
+        premier_string = (f"{self.centre_str("Ligne 3",nom_le_plus_long)}|"
+                          f"{self.centre_str("Ligne 2",nom_le_plus_long)}|"
+                          f"{self.centre_str("Ligne 1",nom_le_plus_long)}| X |"
+                          f"{self.centre_str("Ligne 1",nom_le_plus_long)}|"
+                          f"{self.centre_str("Ligne 2",nom_le_plus_long)}|"
+                          f"{self.centre_str("Ligne 3",nom_le_plus_long)}")
+        char_ligne = "="
+        deuxieme_string = (f"{nom_le_plus_long*char_ligne}|"
+                           f"{nom_le_plus_long*char_ligne}|"
+                           f"{nom_le_plus_long*char_ligne}| X |"
+                           f"{nom_le_plus_long*char_ligne}|"
+                           f"{nom_le_plus_long*char_ligne}|"
+                           f"{nom_le_plus_long*char_ligne}")
         self.printer(f"\n\n{len(premier_string)*'#'}\n")
         self.printer(premier_string)
+        self.printer(deuxieme_string)
 
-        for k in range(1,max(len(camp_1_str), len(camp_2_str))):
-            if len(camp_1_str) > k:
-                self.printer(f"{camp_1_str[k]}{(nom_le_plus_long-len(camp_1_str[k]))*' '}",end="")
-            else:
-                self.printer(f"{' '*nom_le_plus_long}",end="")
-            self.printer(f"{(2*n+6) * ' '}",end="")
-            if len(camp_2_str) > k:
-                self.printer(f"{(nom_le_plus_long-len(camp_2_str[k]))*' '}{camp_2_str[k]}")
-            else:
-                self.printer(f"{' '*nom_le_plus_long}")
+        for k in range(len(listes_nom[0])):
+            string_nom = (f"{listes_nom[2][k]}|{listes_nom[1][k]}|{listes_nom[0][k]}| X |"
+                      f"{listes_nom[3][k]}|{listes_nom[4][k]}|{listes_nom[5][k]}")
+            string_titre = (f"{listes_titre[2][k]}|{listes_titre[1][k]}|{listes_titre[0][k]}| X |"
+                          f"{listes_titre[3][k]}|{listes_titre[4][k]}|{listes_titre[5][k]}")
+            string_vide = (f"{nom_le_plus_long * " "}|"
+                           f"{nom_le_plus_long * " "}|"
+                           f"{nom_le_plus_long * " "}| X |"
+                           f"{nom_le_plus_long * " "}|"
+                           f"{nom_le_plus_long * " "}|"
+                           f"{nom_le_plus_long * " "}")
+            self.printer(string_vide)
+            self.printer(string_nom)
+            self.printer(string_titre)
+
         self.printer(f"\n     {(len(premier_string)-10)*"-"}     \n")
 
     def temps_execution(self,temps:int,rapidite:int):
@@ -101,6 +159,11 @@ class Combat():
             resistance = equipe_def.defense(cible, equipe_atk.obtenir_ligne(auteur))
             d = (capacite.force*auteur.atk_phy()**1.5)/(resistance**1.5)  * round(rnd.uniform(0.9, 1.1), 2)
         return round(d,2)
+
+    def obtenir_camps(self,acteur:Acteur):
+        if acteur in self.camp_1:
+            return self.camp_1
+        return self.camp_2
 
     def attaque(self,action:Action):
         attaquant,defenseur,capacite=action.auteur,self.choix_cible(action),action.capacite
@@ -147,19 +210,21 @@ class Combat():
                 self.attaque(action_plus_rapide)
 
             #Traite la mort s'il y a
-            self.ecran_combat()
             cible = action_plus_rapide.cible
             if cible.personnage.vie <= 0:
                 if cible in camp_1:
                     camp_1.remove(cible)
                     camp_1_mort.append(cible)
+                    self.equipe_1.chute(cible)
                 elif cible in camp_2:
                     camp_2.remove(cible)
                     camp_2_mort.append(cible)
+                    self.equipe_2.chute(cible)
                 self.printer(f"{cible.personnage.nom} est tombé{'e' if cible.personnage.genre == 'female' else ''} !")
 
             #Nouvelle action
             if len(camp_1)>0 and len(camp_2)>0:
+                self.ecran_combat()
                 personnage = action_plus_rapide.auteur
                 nouvelle_action = self.choix_action(personnage)
                 liste_actions.append(nouvelle_action)
