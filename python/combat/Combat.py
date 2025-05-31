@@ -178,6 +178,13 @@ class Combat():
         defenseur.personnage.vie = max(0, round(defenseur.personnage.vie - deg, 2))
 
     def choix_cible(self,action:Action):
+        if action.auteur.personnage.joueur and action.cible != action.auteur:
+            self.ecran_combat()
+            camps_cible = self.obtenir_camps(action.cible)
+            for k in range (len(camps_cible)):
+                self.printer(f"{k} : {camps_cible[k]}")
+            choix = choix_nombre(len(camps_cible)-1, "Quel ennemie cibler ? :")
+            return camps_cible[choix]
         return action.cible
 
     def debut(self):
