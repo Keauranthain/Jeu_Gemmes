@@ -1,3 +1,4 @@
+from python.Basique import choix_nombre, aleatoire
 from python.Personnage import Personnage
 from python.combat.Acteur import Acteur
 
@@ -76,7 +77,7 @@ class Equipe:
     def malus_distance(self,ligne_attaque:int,ligne_defence:int)->float:
         distance = ligne_attaque + ligne_defence - 1
         if distance > self.distance_sans_malus:
-            return (distance - self.distance_sans_malus)*self.bonus_defense_distance
+            return 1+(distance - self.distance_sans_malus)*self.bonus_defense_distance
         return 1.0
 
 
@@ -143,3 +144,25 @@ class Equipe:
             if self.obtenir_ligne(perso) == 0:
                 result.append(perso)
         return result
+
+    def changement_ligne(self,acteur: Acteur)->bool:
+        possibilite = ["avance", "recule", "immobile"]
+        fait = False
+        if acteur in self.premiere_ligne_combat:
+            possibilite.remove("avance")
+        elif acteur in self.troisieme_ligne_combat:
+            possibilite.remove("recule")
+        if acteur.personnage.joueur:
+            print(f"Ligne actuel : {self.obtenir_ligne(acteur)}")
+            for k in range (len(possibilite)):
+                print(f"{k}: {possibilite[k]}")
+            choix = possibilite[choix_nombre(max = len(possibilite)-1, question="Déplacement : ")]
+        else:
+            choix = possibilite[aleatoire(0,len(possibilite)-1)]
+        if choix == "avance":
+            self.avance(acteur)
+            fait = True
+        if choix == "recule":
+            self.reculer(acteur)
+            fait = True
+        return fait

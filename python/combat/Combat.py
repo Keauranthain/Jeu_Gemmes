@@ -76,11 +76,14 @@ class Combat():
                 self.printer(f"{' '*nom_le_plus_long}")
         self.printer(f"\n     {(len(premier_string)-10)*"-"}     \n")
 
+    def temps_execution(self,temps:int,rapidite:int):
+        return (temps**2)/rapidite
+
     def temps(self,capacite,auteur):
         if capacite.magie > 0:
-            t = (capacite.temps**2)/auteur.incantation
+            t = self.temps_execution(capacite.temps,auteur.incantation)
         else:
-            t = (capacite.temps**2)/auteur.agilite
+            t = self.temps_execution(capacite.temps,auteur.agilite)
         return t
 
     def trouve_equipe(self,acteur:Acteur)->Equipe:
@@ -93,6 +96,7 @@ class Combat():
         equipe_def = self.trouve_equipe(cible)
         if capacite.magie > 0:
             resistance = equipe_def.defense_magique(cible,equipe_atk.obtenir_ligne(auteur))
+            print(f"resistance {resistance}")
             d = (capacite.magie*auteur.atk_mag()**1.5)/(resistance**1.5)  * round(rnd.uniform(0.9, 1.1), 2)
         else:
             resistance = equipe_def.defense(cible, equipe_atk.obtenir_ligne(auteur))
@@ -170,8 +174,8 @@ class Combat():
     def choix_action(self, acteur: Acteur):
         choix = 0
         if acteur.personnage.joueur:
-            self.printer("\n0 : Attaque\n1 : Changement de posture")
-            choix = choix_nombre(max = 1,question="Que voulez vous faire :")
+            self.printer("\n0 : Attaque\n1 : Changement de posture\n2 : Changement de ligne")
+            choix = choix_nombre(max = 2,question="Que voulez vous faire :")
             self.printer("\n")
 
         if choix == 0:
@@ -180,13 +184,16 @@ class Combat():
         elif choix == 1:
             nouvelle_action = self.choix_posture(acteur)
 
+        elif choix == 2:
+            nouvelle_action = self.choix_deplacement(acteur)
+
         return nouvelle_action
 
 
 
     def choix_attaque(self, acteur: Acteur):
         nouvelle_capacite = acteur.personnage.capaciter_selecteur(acteur.personnage.magie,acteur.personnage.endurance)
-        temps = nouvelle_capacite.temps
+        temps = self.temps(nouvelle_capacite.temps,acteur)
         if nouvelle_capacite.cible_sois:
             cible = acteur
         elif acteur in self.camp_1:
@@ -198,7 +205,15 @@ class Combat():
 
 
     def choix_posture(self, acteur: Acteur):
-        temps = 5
+        temps = self.temps_execution(5,acteur.personnage.agilite)
         acteur.changement_posture()
         nouvelle_action = Action(auteur=acteur,cible=acteur, temps=temps)
+        return nouvelle_action
+
+    def choix_deplacement(self, acteur: Acteur):
+        if self.trouve_equipe(acteur).changement_ligne(acteur):
+            temps = self.temps_execution(7, acteur.personnage.agilite)
+        else:
+            temps = 0
+        nouvelle_action = Action(auteur=acteur, cible=acteur, temps=temps)
         return nouvelle_action

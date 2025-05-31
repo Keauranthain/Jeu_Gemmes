@@ -1,4 +1,4 @@
-from python.Basique import choix_nombre
+from python.Basique import choix_nombre,aleatoire
 from python import Personnage as perso
 
 
@@ -16,9 +16,12 @@ class Acteur():
         for posture in postures:
             if posture == self.posture:
                 postures.remove(self.posture)
-        for k in range (2):
-            print(f"{k}: {postures[k]}")
-        choix = choix_nombre(max = 1, question="Nouvelle posture : ")
+        if self.personnage.joueur:
+            for k in range (2):
+                print(f"{k}: {postures[k]}")
+            choix = choix_nombre(max = 1, question="Nouvelle posture : ")
+        else:
+            choix = aleatoire(0,1)
         self.posture = postures[choix]
 
     def def_phy(self):
