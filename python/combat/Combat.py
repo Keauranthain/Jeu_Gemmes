@@ -105,7 +105,7 @@ class Combat():
         return round(d,2)
 
     def attaque(self,action:Action):
-        attaquant,defenseur,capacite=action.auteur,action.cible,action.capacite
+        attaquant,defenseur,capacite=action.auteur,self.choix_cible(action),action.capacite
         deg = self.degat(capacite, defenseur, attaquant)
         attaquant.personnage.mana = min(attaquant.personnage.mana - capacite.mana, attaquant.personnage.mana_total)
         attaquant.personnage.endurance = min(attaquant.personnage.endurance - capacite.endurance, attaquant.personnage.endurance_total)
@@ -115,6 +115,9 @@ class Combat():
         else:
             self.printer(f" et inflige {deg} à {defenseur.personnage.nom}")
         defenseur.personnage.vie = max(0, round(defenseur.personnage.vie - deg, 2))
+
+    def choix_cible(self,action:Action):
+        return action.cible
 
     def debut(self):
         camp_1 = self.camp_1
