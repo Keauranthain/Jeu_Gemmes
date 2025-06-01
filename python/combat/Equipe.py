@@ -219,7 +219,8 @@ class Equipe:
         elif self.est_debout(self.second):
             return self.chef.personnage.charisme ** 0.05
         else:
-            return 0.75
+            return 0.8
+
     def trouve_acteur_avec_personnage(self,perso:Personnage)->Acteur:
         for acteur in self.liste():
             if acteur.personnage == perso:
