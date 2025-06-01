@@ -45,8 +45,14 @@ class Combat():
         return f"{perso.nom} ({perso.vie} / {perso.vie_total})"
 
     def str_titre(self,personnage:Acteur):
+        equipe = self.trouve_equipe(personnage)
+        role = ""
+        if equipe.est_chef(personnage):
+            role = "Chef, "
+        elif equipe.est_second(personnage):
+            role = "Second, "
         perso = personnage.personnage
-        return f"{personnage.posture}"
+        return f"{role}{personnage.posture}"
 
     def creation_print_liste(self,camps:list,nom_le_plus_long:int=0,liste_la_plus_long:int=0):
         result = []
@@ -187,10 +193,15 @@ class Combat():
             action.cible = camps_cible[choix]
 
         cible = action.cible
+        equipe_cible = self.trouve_equipe(cible)
         proportion_vie = 0
         for test_cible in camps_cible:
             deg = self.degat(action.capacite, test_cible, action.auteur)
             prop = deg/test_cible.personnage.vie
+            if equipe_cible.est_chef(test_cible):
+                prop *= 1.1
+            if equipe_cible.est_second(test_cible):
+                prop *= 1.05
             if proportion_vie < prop:
                 proportion_vie = prop
                 cible = test_cible

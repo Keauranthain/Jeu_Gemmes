@@ -4,27 +4,41 @@ from python.combat.Acteur import Acteur
 
 
 class Equipe:
-    def __init__(self, premiere_ligne: list[Personnage]=[], deuxieme_ligne: list[Personnage]=[], troisieme_ligne: list[Personnage]=[]):
+    def __init__(self, premiere_ligne: list[Personnage or Acteur]=[], deuxieme_ligne: list[Personnage or Acteur]=[], troisieme_ligne: list[Personnage or Acteur]=[],
+                 chef:Personnage or Acteur = None,second:Personnage or Acteur = None):
         self.premiere_ligne: list[Acteur] = []
         self.premiere_ligne_combat: list[Acteur] = []
-        for personnage in premiere_ligne:
-            perso = Acteur(personnage)
-            perso.ligne = 1
-            self.premiere_ligne.append(perso)
+        self.preparation_liste_acteur(premiere_ligne, self.premiere_ligne)
 
         self.deuxieme_ligne: list[Acteur] = []
         self.deuxieme_ligne_combat: list[Acteur] = []
-        for personnage in deuxieme_ligne:
-            perso = Acteur(personnage)
-            perso.ligne = 2
-            self.deuxieme_ligne.append(perso)
+        self.preparation_liste_acteur(deuxieme_ligne, self.deuxieme_ligne)
 
         self.troisieme_ligne: list[Acteur] = []
         self.troisieme_ligne_combat: list[Acteur] = []
-        for personnage in troisieme_ligne:
-            perso = Acteur(personnage)
-            perso.ligne = 3
-            self.troisieme_ligne.append(perso)
+        self.preparation_liste_acteur(troisieme_ligne, self.troisieme_ligne)
+
+        liste_tempo = self.liste()
+
+        if chef is not None and isinstance(chef, Personnage):
+            chef = self.trouve_acteur_avec_personnage(chef)
+        if second is not None and isinstance(second, Personnage):
+            second = self.trouve_acteur_avec_personnage(second)
+
+        if chef == None or chef not in liste_tempo:
+            if second == liste_tempo[0] and len(liste_tempo)>1:
+                chef = liste_tempo[1]
+            else:
+                chef = liste_tempo[0]
+        self.chef = chef
+        if (second == None or second == chef) and len(liste_tempo)>1:
+            if chef == liste_tempo[0]:
+                second = liste_tempo[1]
+            else:
+                second = liste_tempo[0]
+        elif len(liste_tempo)==1:
+            second = None
+        self.second = second
 
         self.reset_ligne()
         self.bonus_defense_ligne_occupe = 1.5
@@ -44,6 +58,16 @@ class Equipe:
         if acteur in self.troisieme_ligne:
             return True
         return False
+
+    def preparation_liste_acteur(self,liste:list[Personnage or Acteur],result:list[Acteur]=[]):
+        for objet in liste:
+            if isinstance(objet, Personnage):
+                perso = Acteur(objet)
+            else:
+                perso = objet
+            perso.ligne = 2
+            result.append(perso)
+        return result
 
     def reset_ligne(self):
         self.premiere_ligne_combat.clear()
@@ -80,14 +104,13 @@ class Equipe:
             return 1+(distance - self.distance_sans_malus)*self.bonus_defense_distance
         return 1.0
 
-
     def defense(self, perso: Acteur,ligne_attaque: int)->float:
         ligne = self.obtenir_ligne(perso)
-        return perso.def_phy()*self.malus_occupation(ligne)*self.malus_distance(ligne_attaque, ligne)
+        return perso.def_phy()*self.malus_occupation(ligne)*self.malus_distance(ligne_attaque, ligne)*self.bonus_commandement()
 
     def defense_magique(self, perso: Acteur,ligne_attaque: int)->float:
         ligne = self.obtenir_ligne(perso)
-        return perso.def_mag()*self.malus_occupation(ligne)*self.malus_distance(ligne_attaque, ligne)
+        return perso.def_mag()*self.malus_occupation(ligne)*self.malus_distance(ligne_attaque, ligne)*self.bonus_commandement()
 
     def avance(self, perso: Acteur)->None:
         if perso in self.deuxieme_ligne_combat:
@@ -166,7 +189,30 @@ class Equipe:
         elif perso in self.troisieme_ligne:
             return "troisieme ligne"
 
+    def est_chef(self,acteur:Acteur)->bool:
+        return acteur == self.chef
 
+    def est_second(self,acteur:Acteur)->bool:
+        return acteur == self.second
+
+    def est_tomber(self,acteur:Acteur)->bool:
+        return acteur in self.liste_tomber()
+
+    def est_debout(self,acteur:Acteur)->bool:
+        return acteur in self.liste_combat()
+
+    def bonus_commandement(self)->float:
+        if self.est_debout(self.chef):
+            return self.chef.personnage.charisme ** 0.1
+        elif self.est_debout(self.second):
+            return self.chef.personnage.charisme ** 0.05
+        else:
+            return 0.75
+    def trouve_acteur_avec_personnage(self,perso:Personnage)->Acteur:
+        for acteur in self.liste():
+            if acteur.personnage == perso:
+                return acteur
+        return None
     def changement_ligne(self,acteur: Acteur)->bool:
         possibilite = ["avance", "recule", "immobile"]
         fait = False

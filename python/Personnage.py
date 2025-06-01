@@ -31,6 +31,9 @@ class Personnage():
         for capacite_clef in base.get("capacite_base", []):
             self.capacite.append(capacite(capacite_clef))
 
+        self.charisme = base.get("charisme", 0) + base.get(f"charisme_{self.genre}", 0)
+        self.intelligence = base.get("intelligence", 0) + base.get(f"intelligence_{self.genre}", 0)
+
         self.joueur = joueur
 
     def __str__(self):
