@@ -7,6 +7,8 @@ class Acteur():
         self.personnage:perso.Personnage = personnage
         self.posture:str = "neutre"
         self.variation_posture:float = 1.25
+        self.depacement:float = 0
+        self.vivant:bool = True
 
     def __str__(self):
         return f"{self.personnage.nom}"
@@ -56,3 +58,11 @@ class Acteur():
         elif self.posture == "defensive":
             coef = coef / self.variation_posture
         return self.personnage.magie * coef
+
+    def degat(self, nombre:int)->None:
+        degat_arrondi = round(nombre, 2)
+        degat_maximiser = min(self.personnage.vie, nombre)
+        self.personnage.vie = round(self.personnage.vie-degat_maximiser, 2)
+        if self.personnage.vie==0:
+            self.vivant = False
+            self.depacement = degat_arrondi - degat_maximiser

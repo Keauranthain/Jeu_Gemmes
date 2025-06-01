@@ -184,7 +184,7 @@ class Combat():
             self.printer(f" et recupère {-capacite.mana} de mana et {-capacite.endurance} d'endurance")
         else:
             self.printer(f" et inflige {deg} à {defenseur.personnage.nom}")
-        defenseur.personnage.vie = max(0, round(defenseur.personnage.vie - deg, 2))
+        defenseur.degat(deg)
 
     def choix_cible(self,action:Action):
         camps_cible = self.obtenir_camps(action.cible)
@@ -201,7 +201,7 @@ class Combat():
             deg = self.degat(action.capacite, test_cible, action.auteur)
             prop = deg/test_cible.personnage.vie
             if equipe_cible.est_chef(test_cible):
-                prop *= 1.1
+                prop *= 1.15
             if equipe_cible.est_second(test_cible):
                 prop *= 1.05
             if proportion_vie < prop:
@@ -225,7 +225,7 @@ class Combat():
             #Trouve le premier à attaquer
             action_plus_rapide = liste_actions[0]
             for action in liste_actions:
-                if action.temps < action_plus_rapide.temps:
+                if action.temps < action_plus_rapide.temps and action.auteur.vivant:
                     action_plus_rapide = action
             liste_actions.remove(action_plus_rapide)
 
@@ -250,7 +250,13 @@ class Combat():
 
             #Traite la mort s'il y a
             cible = action_plus_rapide.cible
-            if cible.personnage.vie <= 0:
+            if not cible.vivant:
+                action_mort:Action
+                for action in liste_actions:
+                    if action.auteur == cible:
+                        action_mort = action
+                liste_actions.remove(action_mort)
+
                 if cible in camp_1:
                     camp_1.remove(cible)
                     camp_1_mort.append(cible)
