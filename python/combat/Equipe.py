@@ -152,15 +152,30 @@ class Equipe:
                 result.append(perso)
         return result
 
+    def ligne_str(self, perso: Acteur,combat:bool=True)->str:
+        if perso in self.premiere_ligne_combat and combat:
+            return "première ligne"
+        elif perso in self.deuxieme_ligne_combat and combat:
+            return "deuxieme ligne"
+        elif perso in self.troisieme_ligne_combat and combat:
+            return "troisieme ligne"
+        elif perso in self.premiere_ligne:
+            return "premiere ligne"
+        elif perso in self.deuxieme_ligne:
+            return "deuxieme ligne"
+        elif perso in self.troisieme_ligne:
+            return "troisieme ligne"
+
+
     def changement_ligne(self,acteur: Acteur)->bool:
         possibilite = ["avance", "recule", "immobile"]
         fait = False
         if acteur in self.premiere_ligne_combat:
+            print("Changement de ligne")
             possibilite.remove("avance")
         elif acteur in self.troisieme_ligne_combat:
             possibilite.remove("recule")
         if acteur.personnage.joueur:
-            print(f"Ligne actuel : {self.obtenir_ligne(acteur)}")
             for k in range (len(possibilite)):
                 print(f"{k}: {possibilite[k]}")
             choix = possibilite[choix_nombre(max = len(possibilite)-1, question="Déplacement : ")]

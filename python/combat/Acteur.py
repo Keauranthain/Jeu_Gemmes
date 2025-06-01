@@ -17,6 +17,7 @@ class Acteur():
             if posture == self.posture:
                 postures.remove(self.posture)
         if self.personnage.joueur:
+            print("Changement de posture")
             for k in range (2):
                 print(f"{k}: {postures[k]}")
             choix = choix_nombre(max = 1, question="Nouvelle posture : ")
