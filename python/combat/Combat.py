@@ -140,14 +140,14 @@ class Combat():
 
         self.printer(f"\n     {(len(premier_string)-10)*"-"}     \n")
 
-    def temps_execution(self,temps:int,rapidite:int):
-        return (temps**2)/rapidite
+    def temps_execution(self,temps:int,rapidite:int,acteur:Acteur):
+        return (temps**2)/(rapidite*self.trouve_equipe(acteur).bonus_commandement())
 
     def temps(self,capacite,auteur):
         if capacite.magie > 0:
-            t = self.temps_execution(capacite.temps,auteur.personnage.incantation)
+            t = self.temps_execution(capacite.temps,auteur.personnage.incantation,auteur)
         else:
-            t = self.temps_execution(capacite.temps,auteur.personnage.agilite)
+            t = self.temps_execution(capacite.temps,auteur.personnage.agilite,auteur)
         return t
 
     def trouve_equipe(self,acteur:Acteur)->Equipe:
@@ -160,10 +160,12 @@ class Combat():
         equipe_def = self.trouve_equipe(cible)
         if capacite.magie > 0:
             resistance = equipe_def.defense_magique(cible,equipe_atk.obtenir_ligne(auteur))
-            d = (capacite.magie*auteur.atk_mag()**1.5)/(resistance**1.5)  * round(rnd.uniform(0.9, 1.1), 2)
+            puissance = capacite.magie*equipe_atk.attaque_magique(auteur)
+            d = (puissance**1.5)/(resistance**1.5)  * round(rnd.uniform(0.9, 1.1), 2)
         else:
             resistance = equipe_def.defense(cible, equipe_atk.obtenir_ligne(auteur))
-            d = (capacite.force*auteur.atk_phy()**1.5)/(resistance**1.5)  * round(rnd.uniform(0.9, 1.1), 2)
+            puissance = capacite.force*equipe_atk.attaque(auteur)
+            d = (puissance**1.5)/(resistance**1.5)  * round(rnd.uniform(0.9, 1.1), 2)
         return round(d,2)
 
     def obtenir_camps(self,acteur:Acteur):
@@ -307,12 +309,12 @@ class Combat():
 
 
     def choix_posture(self, acteur: Acteur):
-        temps = self.temps_execution(5,acteur.personnage.agilite)
+        temps = self.temps_execution(5,acteur.personnage.agilite,acteur)
         nouvelle_action = Action(auteur=acteur,cible=acteur, temps=temps,posture=True)
         return nouvelle_action
 
     def choix_deplacement(self, acteur: Acteur):
-        temps = self.temps_execution(7, acteur.personnage.agilite)
+        temps = self.temps_execution(7, acteur.personnage.agilite,acteur)
         nouvelle_action = Action(auteur=acteur, cible=acteur, temps=temps, position=True)
         self.printer(f"{acteur.personnage.nom} ce prépare a changer de position !")
         return nouvelle_action

@@ -112,6 +112,18 @@ class Equipe:
         ligne = self.obtenir_ligne(perso)
         return perso.def_mag()*self.malus_occupation(ligne)*self.malus_distance(ligne_attaque, ligne)*self.bonus_commandement()
 
+    def attaque(self, perso: Acteur)->float:
+        return perso.atk_phy()*self.bonus_commandement()
+
+    def attaque_magique(self, perso: Acteur)->float:
+        return perso.atk_mag()*self.bonus_commandement()
+
+    def vitesse(self, perso: Acteur)->float:
+        return perso.personnage.agilite**self.bonus_commandement()
+
+    def vitesse_magique(self, perso: Acteur)->float:
+        return perso.personnage.incantation*self.bonus_commandement()
+
     def avance(self, perso: Acteur)->None:
         if perso in self.deuxieme_ligne_combat:
             self.deuxieme_ligne_combat.remove(perso)
@@ -213,6 +225,7 @@ class Equipe:
             if acteur.personnage == perso:
                 return acteur
         return None
+
     def changement_ligne(self,acteur: Acteur)->bool:
         possibilite = ["avance", "recule", "immobile"]
         fait = False
