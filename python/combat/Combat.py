@@ -2,6 +2,7 @@ from python import Capacite as capa
 import random as rnd
 
 from python.Capacite import Capacite_class
+from python.Ressource import definir_paramettre, obtenir_paramettre
 from python.combat.Acteur import Acteur
 
 from python.Basique import aleatoire, choix_nombre
@@ -174,7 +175,6 @@ class Combat():
         return self.camp_2
 
     def attaque(self,action:Action):
-        self.choix_cible(action)
         attaquant,defenseur,capacite=action.auteur,action.cible,action.capacite
         deg = self.degat(capacite, defenseur, attaquant)
         attaquant.personnage.mana = min(attaquant.personnage.mana - capacite.mana, attaquant.personnage.mana_total)
@@ -186,28 +186,40 @@ class Combat():
             self.printer(f" et inflige {deg} à {defenseur.personnage.nom}")
         defenseur.degat(deg)
 
-    def choix_cible(self,action:Action):
+    def choix_cible(self,action:Action,confirmation:bool=False):
         camps_cible = self.obtenir_camps(action.cible)
+        if action.capacite.cible_sois or not obtenir_paramettre("action_mouvante"):
+            return
+
+        if confirmation and action.auteur.personnage.joueur and action.cible != action.auteur:
+            choix = choix_nombre(1, f"Confirmer vous l'attaque sur {action.cible.personnage.nom} (0 = Non, 1 = Oui) ? : ")
+            if choix == 1:
+                return
+
+        elif confirmation and action.cible.vivant and action.cible != action.auteur:
+            return
+
         if action.auteur.personnage.joueur and action.cible != action.auteur:
             for k in range (len(camps_cible)):
                 self.printer(f"{k} : {camps_cible[k]}")
             choix = choix_nombre(len(camps_cible)-1, "Quel ennemie cibler ? :")
             action.cible = camps_cible[choix]
-
-        cible = action.cible
-        equipe_cible = self.trouve_equipe(cible)
-        proportion_vie = 0
-        for test_cible in camps_cible:
-            deg = self.degat(action.capacite, test_cible, action.auteur)
-            prop = deg/test_cible.personnage.vie
-            if equipe_cible.est_chef(test_cible):
-                prop *= 1.15
-            if equipe_cible.est_second(test_cible):
-                prop *= 1.05
-            if proportion_vie < prop:
-                proportion_vie = prop
-                cible = test_cible
-        action.cible = cible
+            return
+        elif not action.auteur.personnage.joueur:
+            cible = action.cible
+            equipe_cible = self.trouve_equipe(cible)
+            proportion_vie = 0
+            for test_cible in camps_cible:
+                deg = self.degat(action.capacite, test_cible, action.auteur)
+                prop = deg/test_cible.personnage.vie
+                if equipe_cible.est_chef(test_cible):
+                    prop *= 1.15
+                if equipe_cible.est_second(test_cible):
+                    prop *= 1.05
+                if proportion_vie < prop:
+                    proportion_vie = prop
+                    cible = test_cible
+            action.cible = cible
 
     def debut(self):
         camp_1 = self.camp_1
@@ -234,16 +246,22 @@ class Combat():
             for action in liste_actions:
                 action.avance_temps(action_plus_rapide.temps)
 
+            #Confirmation cible
+            ancienne_cible = action_plus_rapide.cible
+            self.choix_cible(action_plus_rapide, True)
+            nouvelle_cible = not (ancienne_cible == action_plus_rapide.cible)
+
+
             #Attaque
             self.ecran_combat()
-            if action_plus_rapide.capacite != None:
+            if action_plus_rapide.capacite != None and not nouvelle_cible:
                 self.attaque(action_plus_rapide)
-            elif action_plus_rapide.position:
+            elif action_plus_rapide.position and not nouvelle_cible:
                 acteur = action_plus_rapide.auteur
                 equipe = self.trouve_equipe(acteur)
                 equipe.changement_ligne(acteur)
                 self.printer(f"{acteur.personnage.nom} passe en {equipe.ligne_str(acteur)}")
-            elif action_plus_rapide.posture:
+            elif action_plus_rapide.posture and not nouvelle_cible:
                 acteur = action_plus_rapide.auteur
                 action_plus_rapide.auteur.changement_posture()
                 self.printer(f"{acteur.personnage.nom} passe en posture {action_plus_rapide.auteur.posture}")
@@ -268,10 +286,15 @@ class Combat():
                 self.printer(f"{cible.personnage.nom} est tombé{'e' if cible.personnage.genre == 'female' else ''} !")
 
             #Nouvelle action
-            if len(camp_1)>0 and len(camp_2)>0:
+            if len(camp_1)>0 and len(camp_2)>0 and not nouvelle_cible:
                 personnage = action_plus_rapide.auteur
                 nouvelle_action = self.choix_action(personnage)
                 liste_actions.append(nouvelle_action)
+            elif len(camp_1)>0 and len(camp_2)>0:
+                action_plus_rapide.temps = self.temps(action_plus_rapide.capacite, action_plus_rapide.auteur)/2
+                liste_actions.append(action_plus_rapide)
+
+
 
         if(len(camp_1)>0):
             self.printer("Le camps 1 l'emporte !")
@@ -304,13 +327,15 @@ class Combat():
     def choix_attaque(self, acteur: Acteur):
         nouvelle_capacite = acteur.personnage.capaciter_selecteur(acteur.personnage.magie,acteur.personnage.endurance)
         temps = self.temps(nouvelle_capacite,acteur)
+        nouvelle_action = Action(auteur=acteur, cible=None, temps=temps, capacite=nouvelle_capacite)
         if nouvelle_capacite.cible_sois:
             cible = acteur
         elif acteur in self.camp_1:
+            self.choix_cible(nouvelle_action)
             cible = self.camp_2[aleatoire(0, len(self.camp_2)) - 1]
         else:
             cible = self.camp_1[aleatoire(0, len(self.camp_1)) - 1]
-        nouvelle_action = Action(auteur=acteur, cible=cible, temps=temps, capacite=nouvelle_capacite)
+        nouvelle_action.cible = cible
         return nouvelle_action
 
 

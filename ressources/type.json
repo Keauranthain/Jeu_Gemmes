@@ -1,0 +1,57 @@
+{
+  "feu": {
+    "nom": "feu",
+    "adjectif": "enflammé",
+    "adjectif_feminin": "enflammée",
+    "faiblesse": [
+      "eau"
+    ],
+    "resistance": [
+      "air"
+    ]
+  },
+  "air": {
+    "nom": "air",
+    "adjectif": "de vent",
+    "adjectif_feminin": "de vent",
+    "faiblesse": [
+      "feu"
+    ],
+    "resistance": [
+      "terre"
+    ]
+  },
+  "terre": {
+    "nom": "terre",
+    "adjectif": "terreux",
+    "adjectif_feminin": "terreuse",
+    "faiblesse": [
+      "air"
+    ],
+    "resistance": [
+      "foudre"
+    ]
+  },
+  "foudre": {
+    "nom": "foudre",
+    "adjectif": "électrique",
+    "adjectif_feminin": "électrique",
+    "faiblesse": [
+      "terre"
+    ],
+    "resistance": [
+      "eau"
+    ]
+  },
+  "eau": {
+    "nom": "eau",
+    "adjectif": "aqueux",
+    "adjectif_feminin": "aqueuse",
+    "faiblesse": [
+      "foudre"
+    ],
+    "resistance": [
+      "feu"
+    ]
+  }
+}

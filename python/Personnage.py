@@ -1,5 +1,5 @@
 from python.Capacite import capacite
-from python.Ressource import races_global
+from python.Ressource import obtenir_json
 from python.Basique import choix_nombre
 
 class Personnage():
@@ -12,7 +12,7 @@ class Personnage():
         self.nom = nom
         self.race = race
 
-        base = races_global.get(race, {})
+        base = obtenir_json("race").get(race, {})
 
         self.magie = base.get("magie", 0) + base.get(f"magie_{self.genre}", 0)
         self.resistance_magique = base.get("resistance_magique", 0) + base.get(f"resistance_magique_{self.genre}", 0)

@@ -1,11 +1,13 @@
 import time
 
+from python.Ressource import definir_paramettre
 from python.combat.Combat import Combat
 from python import Personnage as perso
 from python.combat.Equipe import Equipe
 
 if __name__ == '__main__':
-    humain_1 = perso.Personnage(joueur=False, nom="Joueur")
+    definir_paramettre("action_mouvante",True)
+    humain_1 = perso.Personnage(joueur=True, nom="Joueur")
     humain_2 = perso.Personnage(joueur=False, nom="Allier")
     goblin_1 = perso.Personnage(joueur=False, nom="Goblin 1", race="goblin")
     goblin_2 = perso.Personnage(joueur=False, nom="Goblin 2", race="goblin")
@@ -22,3 +24,4 @@ if __name__ == '__main__':
         victorieux = c.victoire
         for v in victorieux:
             print(f"{v}, ",end="")
+

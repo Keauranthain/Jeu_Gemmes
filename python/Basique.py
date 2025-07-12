@@ -41,3 +41,6 @@ def choix_nombre(max: int,question:str,min:int=0 ) -> int:
 
 def aleatoire(low, high):
     return floor((high - low + 1) * random()) + low
+
+def  T_ou_F():
+    return aleatoire(0,1) == 1

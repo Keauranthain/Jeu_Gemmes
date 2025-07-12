@@ -67,7 +67,7 @@ def main():
         maj_liste()
         messagebox.showinfo("Succès", f"Capacité '{cle}' enregistrée.")
 
-    champs = ["nom", "force", "magie", "temps", "mana", "endurance"]
+    champs = ["nom", "force", "magie", "vitesse", "mana", "endurance"]
     booleens = ["magique", "cible_sois", "cible_autre", "soin"]
     fen = tk.Tk()
     fen.title("Éditeur de Capacités")
