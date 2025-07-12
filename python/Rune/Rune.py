@@ -1,9 +1,9 @@
 import math
 from functools import total_ordering
 
-from Basique import aleatoire, T_ou_F
+from Basique import aleatoire, True_ou_False, aleatoire_liste
 from Capacite import Capacite_class, capacites_jeu
-from Talent import Talent_class
+from Talent import Tous_talents
 from Type import Type_class
 import Variable_Global
 from Ressource import fichier_config
@@ -36,7 +36,7 @@ class Rune_competence_class(Rune_class):
         self.vitesse,self.attaque,self.defense,self.ressource = repartir_point(point_competence,4)
         self.type = trouve_type(type)
 
-        if (magique and not physique) or (not physique and T_ou_F()):
+        if (magique and not physique) or (not physique and True_ou_False()):
             self.domaine = "magique"
         else:
             self.domaine = "physique"
@@ -46,10 +46,10 @@ class Rune_competence_class(Rune_class):
     def __str__(self):
         if self.inconnu:
             return super().__str__()
-        return (f"Rune {self.domaine} de capacité {self.type.adjectif_feminin}, niveau {self.niveau} \n||| BONUS |||\nattaque {self.attaque}\n"
+        return (f"Rune academique {self.domaine} {self.type.adjectif_feminin}, niveau {self.niveau} \n||| BONUS |||\nattaque {self.attaque}\n"
                 f"vitesse {self.vitesse}\ndefense {self.defense}\nressource {self.ressource}\nTOTAL : "
                 f"{self.vitesse+self.attaque+self.defense+self.ressource}\n|||Capacité|||\n"
-                f"{self.capacite}\n")
+                f"{self.capacite}")
 
     def trouve_capacite(self):
         toutes_capacite = []
@@ -72,24 +72,40 @@ class Rune_competence_class(Rune_class):
         return max(int(facteur * math.exp(exponent)),1)
 
 class Rune_talent_class(Rune_class):
-    def __init__(self, niveau: int = 1, theme: str = "", talent:Talent_class=None,type:Type_class=None,inconnu:bool=False):
+    def __init__(self, niveau: int = 1, theme: str = "", talent:Tous_talents=None,type:Type_class=None,inconnu:bool=False):
         super().__init__(niveau, inconnu)
-        themes_disponibles = ["atk","def","vit","res"]
         point_competence = obtenir_point_competence(niveau)
         self.mag, self.phy = repartir_point(point_competence,2)
+        themes_disponibles = ["atk", "def", "vit", "res"]
         if theme not in themes_disponibles:
             theme = themes_disponibles[aleatoire(0,len(themes_disponibles)-1)]
+        correspondance = {
+            "atk": "offensive",
+            "def": "défensive",
+            "vit": "vive",
+            "res": "énergique"
+        }
+        theme = correspondance.get(theme, theme)
         self.theme = theme
         self.type = trouve_type(type)
-        self.talent = talent
+        if talent == None:
+            self.talent = aleatoire_liste(list(Tous_talents))
+        else:
+            self.talent = talent
 
     def __str__(self):
         if self.inconnu:
             return super().__str__()
-        return (f"Rune {self.theme} de talent {self.type.adjectif_feminin}, niveau {self.niveau} \n||| BONUS |||\nmagie {self.mag}\n"
+        if self.talent == Tous_talents.RRESISTANCE:
+            talent_nom = f"{self.talent.value.nom} : {self.type.nom}"
+            talent_desc = f"Ajoute un cran de résistance à l'élément {self.type.nom}"
+        else:
+            talent_nom = self.talent.value.nom
+            talent_desc =self.talent.value.description
+        return (f"Rune talentueuse {self.theme} {self.type.adjectif_feminin}, niveau {self.niveau} \n||| BONUS |||\nmagie {self.mag}\n"
                 f"physique {self.phy}\nTOTAL : "
                 f"{self.mag + self.phy}\n|||Talent|||\n"
-                f"{self.talent}\n")
+                f"{talent_nom}\n{talent_desc}")
 
 def obtenir_point_competence(niveau):
     niv:int = niveau
