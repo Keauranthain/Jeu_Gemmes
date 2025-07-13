@@ -122,7 +122,7 @@ class Equipe:
         return perso.personnage.agilite**self.bonus_commandement()
 
     def vitesse_magique(self, perso: Acteur)->float:
-        return perso.personnage.incantation*self.bonus_commandement()
+        return perso.personnage.vit_mag*self.bonus_commandement()
 
     def avance(self, perso: Acteur)->None:
         if perso in self.deuxieme_ligne_combat:

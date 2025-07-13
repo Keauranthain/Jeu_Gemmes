@@ -145,8 +145,8 @@ class Combat():
         return (temps**2)/(rapidite*self.trouve_equipe(acteur).bonus_commandement())
 
     def temps(self,capacite,auteur):
-        if capacite.magie > 0:
-            t = self.temps_execution(capacite.temps,auteur.personnage.incantation,auteur)
+        if capacite.atk_mag > 0:
+            t = self.temps_execution(capacite.temps, auteur.personnage.vit_mag, auteur)
         else:
             t = self.temps_execution(capacite.temps,auteur.personnage.agilite,auteur)
         return t
@@ -177,8 +177,8 @@ class Combat():
     def attaque(self,action:Action):
         attaquant,defenseur,capacite=action.auteur,action.cible,action.capacite
         deg = self.degat(capacite, defenseur, attaquant)
-        attaquant.personnage.mana = min(attaquant.personnage.mana - capacite.mana, attaquant.personnage.mana_total)
-        attaquant.personnage.endurance = min(attaquant.personnage.endurance - capacite.endurance, attaquant.personnage.endurance_total)
+        attaquant.personnage.res_mag = min(attaquant.personnage.res_mag - capacite.mana, attaquant.personnage.res_tt_mag)
+        attaquant.personnage.res_phy = min(attaquant.personnage.res_phy - capacite.endurance, attaquant.personnage.res_tt_phy)
         self.printer(f"{attaquant.personnage.nom} utilise {capacite.nom}", end="")
         if capacite.cible_sois:
             self.printer(f" et recupère {-capacite.mana} de mana et {-capacite.endurance} d'endurance")
@@ -254,7 +254,7 @@ class Combat():
 
             #Attaque
             self.ecran_combat()
-            if action_plus_rapide.capacite != None and not nouvelle_cible:
+            if action_plus_rapide.capacite_basique != None and not nouvelle_cible:
                 self.attaque(action_plus_rapide)
             elif action_plus_rapide.position and not nouvelle_cible:
                 acteur = action_plus_rapide.auteur
@@ -291,7 +291,7 @@ class Combat():
                 nouvelle_action = self.choix_action(personnage)
                 liste_actions.append(nouvelle_action)
             elif len(camp_1)>0 and len(camp_2)>0:
-                action_plus_rapide.temps = self.temps(action_plus_rapide.capacite, action_plus_rapide.auteur)/2
+                action_plus_rapide.temps = self.temps(action_plus_rapide.capacite_basique, action_plus_rapide.auteur) / 2
                 liste_actions.append(action_plus_rapide)
 
 
@@ -325,7 +325,7 @@ class Combat():
 
 
     def choix_attaque(self, acteur: Acteur):
-        nouvelle_capacite = acteur.personnage.capaciter_selecteur(acteur.personnage.magie,acteur.personnage.endurance)
+        nouvelle_capacite = acteur.personnage.capaciter_selecteur(acteur.personnage.atk_mag, acteur.personnage.res_phy)
         temps = self.temps(nouvelle_capacite,acteur)
         nouvelle_action = Action(auteur=acteur, cible=None, temps=temps, capacite=nouvelle_capacite)
         if nouvelle_capacite.cible_sois:

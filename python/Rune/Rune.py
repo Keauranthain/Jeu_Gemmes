@@ -12,6 +12,14 @@ class Rune_class():
     def __init__(self, niveau: int = 1,inconnu:bool=False):
         self.niveau = niveau
         self.inconnu:bool = inconnu
+        self.atk_mag:int = 0
+        self.def_mag:int = 0
+        self.vit_mag:int = 0
+        self.res_mag:int = 0
+        self.atk_phy:int = 0
+        self.def_phy:int = 0
+        self.vit_phy:int = 0
+        self.res_phy:int = 0
 
     def __str__(self):
         if fichier_config.getboolean("Rune", "CACHER_LE_NIVEAU_DES_RUNES_INCONNUES", fallback=False):
@@ -21,6 +29,27 @@ class Rune_class():
     def reveler(self):
         self.inconnu = True
 
+    def definir_mag(self,atk_mag:int,def_mag:int,vit_mag:int,res_mag:int):
+        self.atk_mag = atk_mag
+        self.def_mag = def_mag
+        self.vit_mag = vit_mag
+        self.res_mag = res_mag
+
+    def definir_phy(self,atk_phy:int,def_phy:int,vit_phy:int,res_phy:int):
+        self.atk_phy = atk_phy
+        self.def_phy = def_phy
+        self.vit_phy = vit_phy
+        self.res_phy = res_phy
+
+    def str_bonus_capacite(self)->str:
+        result:str = f"||| Capacité |||\n"
+        result += f"          | Physique |  Magique |\n"
+        result += f"=================================\n"
+        result += f"Attaque   |{(9-len(str(self.atk_phy)))*" "+str(self.atk_phy)} |{(9-len(str(self.atk_mag)))*" "+str(self.atk_mag)} |\n"
+        result += f"Defence   |{(9-len(str(self.def_phy)))*" "+str(self.def_phy)} |{(9-len(str(self.def_mag)))*" "+str(self.def_mag)} |\n"
+        result += f"Vitesse   |{(9-len(str(self.vit_phy)))*" "+str(self.vit_phy)} |{(9-len(str(self.vit_mag)))*" "+str(self.vit_mag)} |\n"
+        result += f"Ressource |{(9-len(str(self.res_phy)))*" "+str(self.res_phy)} |{(9-len(str(self.res_mag)))*" "+str(self.res_mag)} |\n"
+        return result
 class Rune_rupture_class(Rune_class):
     def __init__(self, niveau: int = 1,inconnu:bool=False):
         super().__init__(niveau, inconnu)
@@ -29,26 +58,26 @@ class Rune_rupture_class(Rune_class):
             return super().__str__()
         return str(f"Rune de rupture de niveau {self.niveau}")
 
-class Rune_competence_class(Rune_class):
+class Rune_capacite_class(Rune_class):
     def __init__(self, niveau:int=1,magique:bool=False,physique:bool=False,type:Type_class=None,inconnu:bool=False):
         super().__init__(niveau, inconnu)
         point_competence = obtenir_point_competence(niveau)
-        self.vitesse,self.attaque,self.defense,self.ressource = repartir_point(point_competence,4)
+        attaque,defense,vitesse,ressource = repartir_point(point_competence,4)
         self.type = trouve_type(type)
 
         if (magique and not physique) or (not physique and True_ou_False()):
             self.domaine = "magique"
+            self.definir_mag(attaque,defense,vitesse,ressource)
         else:
             self.domaine = "physique"
+            self.definir_phy(attaque, defense, vitesse, ressource)
         self.capacite = self.trouve_capacite()
 
 
     def __str__(self):
         if self.inconnu:
             return super().__str__()
-        return (f"Rune academique {self.domaine} {self.type.adjectif_feminin}, niveau {self.niveau} \n||| BONUS |||\nattaque {self.attaque}\n"
-                f"vitesse {self.vitesse}\ndefense {self.defense}\nressource {self.ressource}\nTOTAL : "
-                f"{self.vitesse+self.attaque+self.defense+self.ressource}\n|||Capacité|||\n"
+        return (f"Rune academique {self.domaine} {self.type.adjectif_feminin}, niveau {self.niveau} \n{self.str_bonus_capacite()}|||Capacité|||\n"
                 f"{self.capacite}")
 
     def trouve_capacite(self):
@@ -75,17 +104,27 @@ class Rune_talent_class(Rune_class):
     def __init__(self, niveau: int = 1, theme: str = "", talent:Tous_talents=None,type:Type_class=None,inconnu:bool=False):
         super().__init__(niveau, inconnu)
         point_competence = obtenir_point_competence(niveau)
-        self.mag, self.phy = repartir_point(point_competence,2)
+        mag, phy = repartir_point(point_competence,2)
         themes_disponibles = ["atk", "def", "vit", "res"]
         if theme not in themes_disponibles:
             theme = themes_disponibles[aleatoire(0,len(themes_disponibles)-1)]
-        correspondance = {
-            "atk": "offensive",
-            "def": "défensive",
-            "vit": "vive",
-            "res": "énergique"
-        }
-        theme = correspondance.get(theme, theme)
+        match theme:
+            case "atk":
+                theme = "attaque"
+                self.atk_phy = phy
+                self.atk_mag = mag
+            case "def":
+                theme = "défense"
+                self.def_mag = mag
+                self.def_phy = phy
+            case "vit":
+                theme = "vitesse"
+                self.vit_mag = mag
+                self.vit_phy = phy
+            case "res":
+                theme = "résistance"
+                self.res_phy = phy
+                self.res_mag = mag
         self.theme = theme
         self.type = trouve_type(type)
         if talent == None:
@@ -102,10 +141,10 @@ class Rune_talent_class(Rune_class):
         else:
             talent_nom = self.talent.value.nom
             talent_desc =self.talent.value.description
-        return (f"Rune talentueuse {self.theme} {self.type.adjectif_feminin}, niveau {self.niveau} \n||| BONUS |||\nmagie {self.mag}\n"
-                f"physique {self.phy}\nTOTAL : "
-                f"{self.mag + self.phy}\n|||Talent|||\n"
+        return (f"Rune talentueuse {self.theme} {self.type.adjectif_feminin}, niveau {self.niveau} \n"
+                f"{self.str_bonus_capacite()}|||Talent|||\n"
                 f"{talent_nom}\n{talent_desc}")
+
 
 def obtenir_point_competence(niveau):
     niv:int = niveau
@@ -121,7 +160,7 @@ def obtenir_point_competence(niveau):
 def rune_aleatoire(niveau:int=1,inconnu:bool=True):
     alea = aleatoire(1,100)
     if alea < 50 :
-        return Rune_competence_class(niveau,inconnu=inconnu)
+        return Rune_capacite_class(niveau, inconnu=inconnu)
     elif alea > 51 :
         return Rune_talent_class(niveau,inconnu=inconnu)
     else :
