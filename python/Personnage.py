@@ -12,7 +12,7 @@ class Personnage():
             self.genre = "male"
         else:
             self.genre = "female"
-        self.nom = nom
+        self.nom:str = nom
         self.race = race
 
         base = obtenir_json("race").get(race, {})
