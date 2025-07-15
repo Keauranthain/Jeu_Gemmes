@@ -4,6 +4,7 @@ from Type import Type_class
 from python.Capacite import capacite
 from python.Ressource import obtenir_json
 from python.Basique import choix_nombre
+from python.personnage.Race import Race_class
 
 class Personnage():
     def __init__(self, nom:str, race:str = "humain", joueur = False,male:bool = False,female:bool = False):
@@ -13,29 +14,14 @@ class Personnage():
         else:
             self.genre = "female"
         self.nom:str = nom
-        self.race = race
+        self.race = Race_class(race)
 
-        base = obtenir_json("race").get(race, {})
 
-        self.atk_mag:int = base.get("magie", 0) + base.get(f"magie_{self.genre}", 0)
-        self.def_mag:int = base.get("resistance_magique", 0) + base.get(f"resistance_magique_{self.genre}", 0)
-        self.vit_mag:int = base.get("incantation", 0) + base.get(f"incantation_{self.genre}", 0)
-        self.res_tt_mag:int = base.get("mana", 0) + base.get(f"mana_{self.genre}", 0)
-        self.res_mag:int = self.res_tt_mag
-        self.atk_phy:int = base.get("force", 0) + base.get(f"force_{self.genre}", 0)
-        self.def_phy:int = base.get("resistance", 0) + base.get(f"resistance_{self.genre}", 0)
-        self.agilite:int = base.get("agilite", 0) + base.get(f"agilite_{self.genre}", 0)
-        self.res_tt_phy:int = base.get("endurance", 0) + base.get(f"endurance_{self.genre}", 0)
-        self.res_phy:int = self.res_tt_phy
-        self.vie_total:int = base.get("vie", 0) + base.get(f"vie_{self.genre}", 0)
-        self.vie:int = self.vie_total
+        self.res_mag:int = self.race.get_res_mag(self.genre)
+        self.res_phy:int = self.race.get_res_phy(self.genre)
+        self.vie:int = self.race.get_vie(self.genre)
 
-        self.capacite_basique = []
-        for capacite_clef in base.get("capacite_base", []):
-            self.capacite_basique.append(capacite(capacite_clef))
-
-        self.charisme = base.get("charisme", 0) + base.get(f"charisme_{self.genre}", 0)
-        self.intelligence = base.get("intelligence", 0) + base.get(f"intelligence_{self.genre}", 0)
+        self.eveiller = False
 
         self.runes = []
         self.capacites_runes = []
@@ -58,45 +44,65 @@ class Personnage():
         self.joueur = joueur
 
     def __str__(self):
-        return f"{self.nom}, {self.race}, {self.genre}, - Vie: {self.vie}/{self.vie_total}, Mana: {self.res_mag}/{self.res_tt_mag}, Endurance: {self.res_phy}/{self.res_tt_phy}"
+        return f"{self.nom}, {self.race}, {self.genre}, - Vie: {self.vie}/{self.get_vie_tt()}, Mana: {self.res_mag}/{self.get_res_mag()}, Endurance: {self.res_phy}/{self.get_res_phy()}"
 
     def capaciter_selecteur(self,mana,endurance):
         liste_temporaire = []
-        for k in self.capacite_basique:
+        for k in self.race.capacite:
             if k.res_mag<=mana and k.res_phy<=endurance:
                 liste_temporaire.append(k)
         if self.joueur:
-            print(f"Endurance: {endurance}/{self.res_tt_phy}\nMana: {mana}/{self.res_tt_mag}\n")
+            print(f"Endurance: {endurance}/{self.race.get_res_phy(self.genre)}\nMana: {mana}/{self.race.get_res_mag(self.genre)}\n")
             for k in range (len(liste_temporaire)):
                 print(f"{k} : {liste_temporaire[k].nom}, mana : {liste_temporaire[k].res_mag},"
                       f" endurance : {liste_temporaire[k].res_phy}")
             result = choix_nombre(max = len(liste_temporaire)-1, question = "Capacité : ")
             return liste_temporaire[result]
-        return self.capacite_basique[0]
+        return self.race.capacite[0]
 
     def get_atk_mag(self)->int:
-        return self.atk_mag + self.atk_mag_rune
+        return self.race.get_atk_mag(self.genre) + self.atk_mag_rune
 
     def get_def_mag(self)->int:
-        return self.def_mag + self.def_mag_rune
+        return self.race.get_def_mag(self.genre) + self.def_mag_rune
 
     def get_vit_mag(self)->int:
-        return self.vit_mag + self.vit_mag_rune
+        return self.race.get_vit_mag(self.genre) + self.vit_mag_rune
 
     def get_res_mag(self)->int:
-        return self.res_tt_mag + self.res_mag_rune
+        return self.race.get_res_mag(self.genre) + self.res_mag_rune
+
+    def get_pas_mag(self)->int:
+        mult_talent = (1+self.talents.get(Tous_talents.INTELLIGENCE,0)/10)
+        bonus_rune = self.moyenne_mag()
+        return int((self.race.get_pas_mag(self.genre)+bonus_rune)*mult_talent)
 
     def get_atk_phy(self)->int:
-        return self.atk_phy + self.atk_phy_rune
+        return self.race.get_atk_phy(self.genre) + self.atk_phy_rune
 
     def get_def_phy(self)->int:
-        return self.def_phy + self.def_phy_rune
+        return self.race.get_def_phy(self.genre) + self.def_phy_rune
 
     def get_vit_phy(self)->int:
-        return self.agilite + self.vit_phy_rune
+        return self.race.get_vit_phy(self.genre) + self.vit_phy_rune
 
     def get_res_phy(self)->int:
-        return self.res_tt_phy + self.res_phy_rune
+        return self.race.get_res_phy(self.genre) + self.res_phy_rune
+
+    def get_pas_phy(self)->int:
+        mult_talent = (1+self.talents.get(Tous_talents.CHARISME,0)/10)
+        bonus_rune = self.moyenne_phy()
+        return int((self.race.get_pas_phy(self.genre)+bonus_rune)*mult_talent)
+
+    def get_vie_tt (self)->int:
+        mult_talent = (1 + self.talents.get(Tous_talents.RESILIENCE, 0) / 10)
+        return int((self.race.get_vie(self.genre)+(self.moyenne_mag()+self.moyenne_phy())/2)*mult_talent)
+
+    def moyenne_phy(self)->int:
+        return int((self.atk_phy_rune+self.def_phy_rune+self.vit_phy_rune+self.res_phy_rune)/4)
+
+    def moyenne_mag(self)->int:
+        return int((self.atk_mag_rune+self.def_mag_rune+self.vit_mag_rune+self.res_mag_rune)/4)
 
     def equipe_rune(self,rune:Rune_class)->str:
         if len(self.runes)>= self.niveau:
@@ -128,3 +134,11 @@ class Personnage():
             self.cran_element_defense_sup[rune.element] = self.cran_element_defense_sup.get(rune.element, 0) + 1
         else:
             self.talents[rune.talent] = self.talents.get(rune.talent, 0) + 1
+
+    def eveille(self):
+        if not self.race.magique and not self.eveiller:
+            self.eveiller = True
+            return f"{self.nom} s'éveille"
+        elif self.eveiller:
+            return f"{self.nom} est déjà éveillé"
+        return f"{self.nom} est d'une race qui n'a pas d'éveille"

@@ -43,7 +43,7 @@ class Combat():
 
     def str_vie(self,personnage:Acteur):
         perso = personnage.personnage
-        return f"{perso.nom} ({perso.vie} / {perso.vie_total})"
+        return f"{perso.nom} ({perso.vie} / {perso.get_vie_tt()})"
 
     def str_titre(self,personnage:Acteur):
         equipe = self.trouve_equipe(personnage)
@@ -162,12 +162,12 @@ class Combat():
         if capacite.magie > 0:
             resistance = equipe_def.defense_magique(cible,equipe_atk.obtenir_ligne(auteur))
             puissance = capacite.magie*equipe_atk.attaque_magique(auteur)
-            d = (puissance**1.5)/(resistance**1.5)  * round(rnd.uniform(0.9, 1.1), 2)
+            degat = (puissance**1.5)/(resistance**1.5)  * round(rnd.uniform(0.9, 1.1), 2)
         else:
             resistance = equipe_def.defense(cible, equipe_atk.obtenir_ligne(auteur))
             puissance = capacite.force*equipe_atk.attaque(auteur)
-            d = (puissance**1.5)/(resistance**1.5)  * round(rnd.uniform(0.9, 1.1), 2)
-        return round(d,2)
+            degat = (puissance**1.5)/(resistance**1.5)  * round(rnd.uniform(0.9, 1.1), 2)
+        return round(degat,2)
 
     def obtenir_camps(self,acteur:Acteur):
         if acteur in self.camp_1:

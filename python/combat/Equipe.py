@@ -1,5 +1,5 @@
 from python.Basique import choix_nombre, aleatoire
-from python.Personnage import Personnage
+from personnage.Personnage import Personnage
 from python.combat.Acteur import Acteur
 
 
@@ -215,9 +215,9 @@ class Equipe:
 
     def bonus_commandement(self)->float:
         if self.est_debout(self.chef):
-            return self.chef.personnage.charisme ** 0.1
+            return self.chef.personnage.get_pas_phy() ** 0.1
         elif self.est_debout(self.second):
-            return self.chef.personnage.charisme ** 0.05
+            return self.chef.personnage.get_pas_phy() ** 0.05
         else:
             return 0.8
 

@@ -1,5 +1,5 @@
 from python.Basique import choix_nombre,aleatoire
-from python import Personnage as perso
+from personnage import Personnage as perso
 
 
 class Acteur():
@@ -33,7 +33,7 @@ class Acteur():
             coef = coef/self.variation_posture
         elif self.posture == "defensive":
             coef = coef*self.variation_posture
-        return self.personnage.def_phy*coef
+        return self.personnage.get_def_phy()*coef
 
     def def_mag(self):
         coef = 1
@@ -41,7 +41,7 @@ class Acteur():
             coef = coef / self.variation_posture
         elif self.posture == "defensive":
             coef = coef * self.variation_posture
-        return self.personnage.def_mag * coef
+        return self.personnage.get_def_mag() * coef
 
     def atk_phy(self):
         coef = 1
@@ -49,7 +49,7 @@ class Acteur():
             coef = coef * self.variation_posture
         elif self.posture == "defensive":
             coef = coef / self.variation_posture
-        return self.personnage.atk_phy * coef
+        return self.personnage.get_atk_phy() * coef
 
     def atk_mag(self):
         coef = 1
@@ -57,7 +57,7 @@ class Acteur():
             coef = coef * self.variation_posture
         elif self.posture == "defensive":
             coef = coef / self.variation_posture
-        return self.personnage.atk_mag * coef
+        return self.personnage.get_atk_mag() * coef
 
     def degat(self, nombre:int)->None:
         degat_arrondi = round(nombre, 2)
